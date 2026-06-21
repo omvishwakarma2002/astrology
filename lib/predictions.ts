@@ -17,6 +17,20 @@ export interface Prediction {
   luckyDays: string[];
 }
 
+export interface DangerWarning {
+  icon: string;
+  title: string;
+  description: string;
+  severity: 'high' | 'medium' | 'low';
+}
+
+export interface LuckyActivity {
+  icon: string;
+  activity: string;
+  reason: string;
+  bestTime: string;
+}
+
 export interface FutureForecast {
   week: Prediction[];
   month: Prediction[];
@@ -25,6 +39,8 @@ export interface FutureForecast {
   overallScore: number;
   cosmicMessage: string;
   powerDates: { date: string; event: string }[];
+  dangers: DangerWarning[];
+  luckyActivities: LuckyActivity[];
 }
 
 const ENERGY_LABELS: Record<Energy, string> = {
@@ -281,6 +297,76 @@ function spiritualPrediction(
   return { area: 'Spiritual', icon: '🔮', energy, score, headline, detail: details[energy], advice: advice[energy], luckyDays: getLuckyDays(seed + 9, 2) };
 }
 
+// ─── Danger warnings ─────────────────────────────────────────────────────────
+
+const ALL_DANGERS: DangerWarning[] = [
+  { icon: '💸', title: 'Risky Financial Decisions', description: 'Planetary tension warns against impulsive spending, gambling, or investing in things you don\'t fully understand. Avoid lending large sums to friends or signing financial agreements without careful review.', severity: 'high' },
+  { icon: '🗣️', title: 'Arguments & Harsh Words', description: 'Mercury\'s current position heightens the risk of miscommunication and heated arguments. Words spoken in anger now may cause lasting damage. Think twice before sending that message or having that confrontation.', severity: 'high' },
+  { icon: '💔', title: 'Rushing into Romance', description: 'The stars caution against moving too fast in love right now. What feels like intense connection may be projection or illusion. Take your time before making serious commitments to new romantic partners.', severity: 'medium' },
+  { icon: '🏃', title: 'Physical Overexertion', description: 'Mars energy is erratic — pushing your body too hard right now risks injury, particularly to muscles, joints, or the head. Avoid extreme sports, reckless driving, or skipping rest when your body signals fatigue.', severity: 'medium' },
+  { icon: '🍷', title: 'Escapism & Excess', description: 'Neptune\'s influence may tempt you toward overindulgence — alcohol, social media spirals, binge-watching, or other forms of escape. These provide momentary relief but deepen the underlying issues. Stay grounded.', severity: 'medium' },
+  { icon: '🤐', title: 'Keeping Toxic Secrets', description: 'Something hidden is building pressure. Carrying a secret or unspoken truth alone right now will only amplify stress and anxiety. Find a trusted person to confide in, or journal honestly to release the weight.', severity: 'medium' },
+  { icon: '🌙', title: 'Sleep Neglect', description: 'The Moon\'s current position makes sleep disruption more likely. Ignoring rest will compound every other challenge in your life right now. Guard your sleep like the sacred medicine it is — no screens after 10pm.', severity: 'low' },
+  { icon: '👥', title: 'Toxic Social Circles', description: 'Saturn is highlighting the people in your life who drain rather than replenish your energy. Be cautious of those who consistently create drama, manipulate, or leave you feeling worse about yourself after every interaction.', severity: 'medium' },
+  { icon: '📱', title: 'Social Media Comparison', description: 'Venus in a tense aspect warns against comparing your real life to others\' highlight reels. Scrolling through social media this period will stoke feelings of inadequacy and envy. Use the time for something that builds you up instead.', severity: 'low' },
+  { icon: '⚡', title: 'Impulsive Major Decisions', description: 'Uranus is electrifying your chart, making spontaneous and drastic decisions tempting — quitting your job, ending a relationship, or making sudden life changes. While change may be needed, wait at least two weeks before acting on any urge that feels overwhelming.', severity: 'high' },
+  { icon: '🤝', title: 'Unvetted Business Partnerships', description: 'Jupiter\'s square warns against rushing into business deals, partnerships, or contracts without thorough due diligence. Someone may appear more trustworthy or capable than they truly are. Verify everything in writing.', severity: 'high' },
+  { icon: '😤', title: 'Suppressing Anger', description: 'Bottling up frustration and resentment right now will lead to an uncontrolled explosion later. Find healthy outlets — exercise, journaling, honest conversation — to release pent-up anger before it turns toxic.', severity: 'low' },
+  { icon: '🏥', title: 'Ignoring Health Symptoms', description: 'The 6th house is under planetary stress. Do not ignore persistent physical symptoms or postpone medical check-ups. What seems minor now could escalate if left unattended. Your body is speaking — listen to it.', severity: 'high' },
+  { icon: '🛒', title: 'Retail Therapy', description: 'Emotional spending is a real risk this period. When you feel the urge to buy something unnecessary to lift your mood, pause for 24 hours. The emptiness that shopping temporarily fills requires deeper attention.', severity: 'low' },
+  { icon: '🌀', title: 'Overthinking & Anxiety Spirals', description: 'Mercury retrograde energy is amplifying mental chatter and worst-case-scenario thinking. Recognize when your mind is spinning stories rather than solving problems. Breathe, ground yourself, and return to what is actually real right now.', severity: 'medium' },
+];
+
+const ALL_LUCKY_ACTIVITIES: LuckyActivity[] = [
+  { icon: '🧘', activity: 'Morning Meditation', reason: 'Jupiter aligns with your natal Moon, amplifying inner clarity and spiritual receptivity. Even 10 minutes at sunrise will supercharge your intuition for the entire day.', bestTime: 'Sunrise, before checking your phone' },
+  { icon: '✍️', activity: 'Journaling Your Dreams', reason: 'Neptune is activated in your chart, making the dream world extraordinarily rich with guidance. Keep a journal by your bed and write immediately upon waking — the messages are literal gold.', bestTime: 'Within 5 minutes of waking' },
+  { icon: '🌿', activity: 'Walking Barefoot in Nature', reason: 'Venus trines your Earth planets, creating a powerful connection to nature\'s healing energy. Direct contact with grass or soil grounds your energy and dissolves accumulated stress at the cellular level.', bestTime: 'Golden hour — 1 hour before sunset' },
+  { icon: '🎨', activity: 'Creative Expression', reason: 'The Sun-Neptune aspect floods your chart with creative inspiration. Painting, drawing, writing poetry, dancing, or making music will not only bring joy but may produce your finest work yet.', bestTime: 'Afternoon, when creative flow peaks' },
+  { icon: '💌', activity: 'Reaching Out to Someone You Love', reason: 'Venus is blessing your communication sector. A heartfelt message, call, or visit to someone who matters to you will deepen the bond and bring unexpected warmth back to you in return.', bestTime: 'Evening, when hearts are most open' },
+  { icon: '📚', activity: 'Learning Something New', reason: 'Mercury is well-aspected for knowledge absorption right now. Starting a course, reading a challenging book, or watching an educational documentary will feel unusually satisfying and the information will stick.', bestTime: 'Morning, when the mind is sharpest' },
+  { icon: '🛁', activity: 'Salt Bath or Shower Ritual', reason: 'The Moon is cleansing your energetic field. A bath or shower with intention — imagining all stress and negativity washing away — carries powerful purifying energy right now. Add sea salt for extra potency.', bestTime: 'Evening, before bed' },
+  { icon: '💰', activity: 'Saving or Investing Wisely', reason: 'Jupiter trines your natal Saturn, creating one of the most auspicious windows of the year for financial decisions made from a place of patience and wisdom. Even a small investment now grows disproportionately.', bestTime: 'Wednesday or Thursday' },
+  { icon: '🤸', activity: 'Gentle Yoga or Stretching', reason: 'Mars is supporting mindful physical practice right now. Yoga, tai chi, or even a simple 10-minute stretch routine will dramatically increase your energy, reduce tension, and align your body with cosmic flow.', bestTime: 'Early morning or before lunch' },
+  { icon: '🌱', activity: 'Starting a New Project', reason: 'The New Moon energy combined with Jupiter\'s expansion means any seed you plant right now — a business idea, a creative project, a health habit — has unusually fertile ground to grow from.', bestTime: 'Within 48 hours of your reading' },
+  { icon: '🙏', activity: 'Gratitude Practice', reason: 'Venus and Jupiter together create a powerful gratitude vortex in your chart. Writing down 5 specific things you are grateful for each evening will magnetically attract more of the same into your life at an accelerated rate.', bestTime: 'Last thing before sleep' },
+  { icon: '🧹', activity: 'Decluttering Your Space', reason: 'Saturn is pushing you to release what no longer serves. Clearing physical clutter from your home or workspace creates literal and energetic space for new blessings, opportunities, and clarity to enter your life.', bestTime: 'Weekend morning' },
+  { icon: '🤝', activity: 'Networking & Social Connection', reason: 'The Sun in a strong position makes you unusually magnetic and memorable to others right now. Attend events, reach out to old contacts, or simply show up more visibly — the right people are being drawn into your orbit.', bestTime: 'Evening social events' },
+  { icon: '🌊', activity: 'Swimming or Time Near Water', reason: 'Neptune and your natal Moon create a deep resonance with water\'s healing properties. Time near the ocean, a lake, river, or even your local pool will recharge your emotional batteries and restore your sense of peace.', bestTime: 'Any time you feel emotionally depleted' },
+  { icon: '🎯', activity: 'Setting Clear Intentions', reason: 'Mars is razor-focused in your chart, giving unusual power to clearly stated goals and intentions. Write your top 3 goals as if already achieved, post them somewhere visible, and review them each morning.', bestTime: 'New Moon, or first day of the week' },
+  { icon: '🍳', activity: 'Cooking a Nourishing Meal', reason: 'Taurus and Cancer energy bless domestic activities with healing power right now. Preparing fresh, wholesome food from scratch is both an act of self-love and a form of magic — infuse it with positive intention as you cook.', bestTime: 'Dinner time, with music playing' },
+];
+
+function selectDangers(sunSign: string, harmony: number, seed: number): DangerWarning[] {
+  // More challenging harmony = more/higher severity warnings
+  const count = harmony < -1 ? 4 : harmony < 0 ? 3 : 2;
+  const selected: DangerWarning[] = [];
+  const used = new Set<number>();
+  let s = seed * 7 + sunSign.length * 13;
+  while (selected.length < count) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const idx = s % ALL_DANGERS.length;
+    if (!used.has(idx)) { used.add(idx); selected.push(ALL_DANGERS[idx]); }
+  }
+  // Sort: high severity first
+  return selected.sort((a, b) => {
+    const order = { high: 0, medium: 1, low: 2 };
+    return order[a.severity] - order[b.severity];
+  });
+}
+
+function selectLuckyActivities(sunSign: string, harmony: number, seed: number): LuckyActivity[] {
+  const count = 4;
+  const selected: LuckyActivity[] = [];
+  const used = new Set<number>();
+  let s = seed * 11 + sunSign.length * 17 + 999;
+  while (selected.length < count) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const idx = s % ALL_LUCKY_ACTIVITIES.length;
+    if (!used.has(idx)) { used.add(idx); selected.push(ALL_LUCKY_ACTIVITIES[idx]); }
+  }
+  return selected;
+}
+
 // ─── Main forecast engine ─────────────────────────────────────────────────────
 
 export function generateForecast(
@@ -368,6 +454,9 @@ export function generateForecast(
     { date: addDays(now, 28), event: `Jupiter's blessing touches your financial sector` },
   ];
 
+  const harmony = weekPredictions.reduce((s, p) => s + (p.score - 5), 0);
+  const seed = (birthYear + birthMonth * 13 + birthDay * 31) % 97 + 1;
+
   return {
     week: weekPredictions,
     month: monthPredictions,
@@ -376,6 +465,8 @@ export function generateForecast(
     overallScore: Math.round(avgScore * 10) / 10,
     cosmicMessage: cosmicMessages[overallEnergy],
     powerDates,
+    dangers: selectDangers(natalSun.sign, harmony, seed),
+    luckyActivities: selectLuckyActivities(natalSun.sign, harmony, seed),
   };
 }
 

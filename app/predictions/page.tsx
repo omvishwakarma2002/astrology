@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { generateForecast, FutureForecast, Prediction, Timeframe, ENERGY_LABELS, Energy } from '@/lib/predictions';
+import { generateForecast, FutureForecast, Prediction, Timeframe, ENERGY_LABELS, Energy, DangerWarning, LuckyActivity } from '@/lib/predictions';
 
 const ENERGY_COLORS: Record<Energy, string> = {
   excellent:   '#22c55e',
@@ -330,6 +330,49 @@ export default function PredictionsPage() {
               ))}
             </div>
 
+            {/* Danger warnings */}
+            <div className="glass-card danger-card">
+              <h3 className="section-title danger-title">⚠️ What to Stay Away From</h3>
+              <p className="section-sub">The planets reveal energies and situations to avoid right now</p>
+              <div className="danger-list">
+                {forecast.dangers.map((d, i) => (
+                  <div key={i} className={`danger-item severity-${d.severity}`}>
+                    <div className="danger-header">
+                      <span className="danger-icon">{d.icon}</span>
+                      <div className="danger-info">
+                        <span className={`severity-badge badge-${d.severity}`}>
+                          {d.severity === 'high' ? '🔴 High Risk' : d.severity === 'medium' ? '🟡 Caution' : '🟢 Mild Warning'}
+                        </span>
+                        <span className="danger-title-text">{d.title}</span>
+                      </div>
+                    </div>
+                    <p className="danger-desc">{d.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Lucky activities */}
+            <div className="glass-card lucky-card">
+              <h3 className="section-title lucky-title">✨ Good Luck Activities</h3>
+              <p className="section-sub">Cosmic-aligned actions that will amplify your fortune right now</p>
+              <div className="lucky-grid">
+                {forecast.luckyActivities.map((a, i) => (
+                  <div key={i} className="lucky-item">
+                    <div className="lucky-top">
+                      <span className="lucky-icon">{a.icon}</span>
+                      <span className="lucky-activity">{a.activity}</span>
+                    </div>
+                    <p className="lucky-reason">{a.reason}</p>
+                    <div className="lucky-time">
+                      <span className="clock-icon">🕐</span>
+                      <span className="best-time">Best time: {a.bestTime}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <p className="disclaimer">
               ✦ These predictions are based on planetary transits and are intended for
               reflection and inspiration. Your free will is always the most powerful force in your life.
@@ -401,6 +444,48 @@ export default function PredictionsPage() {
         }
         .tab-btn.active { background: rgba(212,175,55,0.15); color: #d4af37; }
         .preds-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        /* Danger section */
+        .danger-card { padding: 1.75rem; }
+        .danger-title { color: #f87171 !important; }
+        .lucky-title { color: #34d399 !important; }
+        .section-sub { color: rgba(255,255,255,0.4); font-size: 0.85rem; margin: -0.5rem 0 1.25rem; }
+        .danger-list { display: flex; flex-direction: column; gap: 0.9rem; }
+        .danger-item {
+          border-radius: 12px;
+          padding: 1rem 1.15rem;
+          border-left: 4px solid;
+        }
+        .severity-high { background: rgba(248,113,113,0.08); border-color: #f87171; }
+        .severity-medium { background: rgba(251,191,36,0.08); border-color: #fbbf24; }
+        .severity-low { background: rgba(148,163,184,0.08); border-color: #94a3b8; }
+        .danger-header { display: flex; align-items: flex-start; gap: 0.85rem; margin-bottom: 0.6rem; }
+        .danger-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+        .danger-info { display: flex; flex-direction: column; gap: 0.2rem; }
+        .severity-badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; }
+        .danger-title-text { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .danger-desc { color: rgba(255,255,255,0.65); font-size: 0.88rem; line-height: 1.75; margin: 0; padding-left: 2.35rem; }
+
+        /* Lucky activities section */
+        .lucky-card { padding: 1.75rem; }
+        .lucky-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 640px) { .lucky-grid { grid-template-columns: 1fr 1fr; } }
+        .lucky-item {
+          background: rgba(52,211,153,0.06);
+          border: 1px solid rgba(52,211,153,0.2);
+          border-radius: 12px;
+          padding: 1.15rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+        .lucky-top { display: flex; align-items: center; gap: 0.7rem; }
+        .lucky-icon { font-size: 1.6rem; }
+        .lucky-activity { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; color: #34d399; }
+        .lucky-reason { color: rgba(255,255,255,0.65); font-size: 0.86rem; line-height: 1.75; margin: 0; }
+        .lucky-time { display: flex; align-items: center; gap: 0.4rem; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
+        .clock-icon { font-size: 0.8rem; }
+        .best-time { font-size: 0.78rem; font-weight: 600; color: #d4af37; }
+
         .disclaimer { text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; line-height: 1.6; padding: 0 1rem; }
       `}</style>
     </div>
