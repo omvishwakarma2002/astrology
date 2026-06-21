@@ -4,6 +4,7 @@ import { useState } from 'react';
 import BirthChartForm, { BirthChartFormData } from '@/components/BirthChartForm';
 import ChartWheel from '@/components/ChartWheel';
 import PlanetCard from '@/components/PlanetCard';
+import PersonalitySummary from '@/components/PersonalitySummary';
 import { calculatePlanetPositions, PlanetPosition } from '@/lib/astrology';
 
 interface ChartResult {
@@ -86,6 +87,11 @@ export default function BirthChartPage() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Personality Summary */}
+            <div className="glass-card summary-card">
+              <PersonalitySummary planets={result.planets} name={result.name} />
             </div>
           </div>
         )}
@@ -180,6 +186,9 @@ export default function BirthChartPage() {
           display: flex;
           flex-direction: column;
           gap: 0.75rem;
+        }
+        .summary-card {
+          padding: 2rem;
         }
       `}</style>
     </div>
