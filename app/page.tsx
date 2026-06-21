@@ -47,6 +47,17 @@ const features = [
     bg: 'rgba(52,211,153,0.08)',
     border: 'rgba(52,211,153,0.25)',
   },
+  {
+    href: '/predictions',
+    icon: '🔮',
+    title: 'Predict Future',
+    subtitle: 'Cosmic Forecast',
+    description:
+      'Discover what the planets have in store for you. Get personalised predictions for love, career, money, health, and spiritual growth — this week, this month, and this year.',
+    color: '#a855f7',
+    bg: 'rgba(168,85,247,0.08)',
+    border: 'rgba(168,85,247,0.25)',
+  },
 ];
 
 const signs = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
@@ -87,6 +98,9 @@ export default function HomePage() {
             <Link href="/horoscope" className="cta-secondary">
               Today&apos;s Horoscope
             </Link>
+            <Link href="/predictions" className="cta-secondary">
+              🔮 Predict Future
+            </Link>
           </div>
         </div>
       </section>
@@ -97,7 +111,7 @@ export default function HomePage() {
           <span className="features-eyebrow">Navigate the Stars</span>
           <h2 className="features-title">Your Celestial Toolkit</h2>
           <p className="features-desc">
-            Four powerful gateways to deeper self-understanding and cosmic awareness
+            Five powerful gateways to deeper self-understanding and cosmic awareness
           </p>
         </div>
 
