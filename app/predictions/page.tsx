@@ -1,7 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { generateForecast, FutureForecast, Prediction, Timeframe, ENERGY_LABELS, Energy, DangerWarning, LuckyActivity } from '@/lib/predictions';
+
+const DAY_COLORS = [
+  { day: 'Sunday',    planet: 'Sun',     symbol: '☉', colors: ['#FF8C00','#FFD700','#FFA500'], names: ['Orange','Gold','Amber'],       hex: '#FFD700', meaning: 'Attracts success, confidence, and vitality. Wear gold or orange to radiate solar energy and draw recognition, leadership opportunities, and joy into your day.', avoid: 'Dark blue or black — they suppress the Sun\'s expansive energy.', tip: 'Gold jewellery amplifies this day\'s power enormously.' },
+  { day: 'Monday',    planet: 'Moon',    symbol: '☽', colors: ['#C0C0C0','#E8E8E8','#B0C4DE'], names: ['White','Silver','Pearl'],      hex: '#C0C0C0', meaning: 'Attracts emotional healing, intuition, and inner peace. White and silver align you with lunar energy — perfect for nurturing relationships, creative work, and self-care.', avoid: 'Red or fiery tones — they clash with the Moon\'s gentle, reflective energy.', tip: 'Wearing a pearl or moonstone on Mondays multiplies the Moon\'s blessings.' },
+  { day: 'Tuesday',   planet: 'Mars',    symbol: '♂', colors: ['#DC143C','#FF4500','#B22222'], names: ['Red','Crimson','Scarlet'],     hex: '#DC143C', meaning: 'Attracts courage, energy, and determination. Red is the colour of Mars — wear it when you need to be bold, assert yourself, or overcome obstacles.', avoid: 'Pale or pastel shades — they dilute Mars\'s fierce warrior energy.', tip: 'Red clothing in a job interview on Tuesday gives you a powerful competitive edge.' },
+  { day: 'Wednesday', planet: 'Mercury', symbol: '☿', colors: ['#00CED1','#32CD32','#98FB98'], names: ['Green','Teal','Emerald'],     hex: '#32CD32', meaning: 'Attracts clear communication, intelligence, and business success. Mercury\'s green shades sharpen your mind and open doors in negotiations, learning, and deals.', avoid: 'Heavy dark tones — they slow Mercury\'s quick, communicative vibration.', tip: 'Wearing green before an exam, pitch, or important conversation is extremely auspicious.' },
+  { day: 'Thursday',  planet: 'Jupiter', symbol: '♃', colors: ['#FFD700','#DAA520','#FFA07A'], names: ['Yellow','Golden','Saffron'],  hex: '#DAA520', meaning: 'Attracts abundance, luck, wisdom, and spiritual growth. Jupiter\'s yellow tones are the most powerful for attracting financial prosperity and expanding opportunities.', avoid: 'Grey or dull colours — they dampen Jupiter\'s expansive, generous energy.', tip: 'Yellow is the single luckiest colour of the entire week — Thursday is your golden day.' },
+  { day: 'Friday',    planet: 'Venus',   symbol: '♀', colors: ['#FFB6C1','#FF69B4','#DDA0DD'], names: ['Pink','Rose','Lavender'],     hex: '#FFB6C1', meaning: 'Attracts love, beauty, harmony, and social grace. Venus\'s pink shades make you more magnetic and charming — perfect for dates, social events, and creative work.', avoid: 'Black or harsh tones — they block Venus\'s soft, loving vibration.', tip: 'Pink roses or pink quartz crystals worn on Friday powerfully amplify Venus blessings in love.' },
+  { day: 'Saturday',  planet: 'Saturn',  symbol: '♄', colors: ['#1a1a2e','#4B0082','#2F4F4F'], names: ['Black','Indigo','Dark Blue'], hex: '#4B0082', meaning: 'Attracts discipline, protection, karmic resolution, and long-term success. Saturn\'s dark colours create a powerful shield and help you focus on serious long-term goals.', avoid: 'Bright colours — they conflict with Saturday\'s serious, concentrated energy.', tip: 'Wearing black or navy while doing serious work or meditation on Saturday is deeply empowering.' },
+];
 
 const ENERGY_COLORS: Record<Energy, string> = {
   excellent:   '#22c55e',
@@ -199,6 +209,29 @@ function PredictionCard({ pred, defaultOpen = false }: { pred: Prediction; defau
   );
 }
 
+function TodayHighlight() {
+  const today = useMemo(() => DAY_COLORS[new Date().getDay()], []);
+  return (
+    <div className="today-highlight" style={{ borderColor: today.hex + '55', background: `linear-gradient(135deg, ${today.hex}14, ${today.colors[1]}08)` }}>
+      <div className="th-left">
+        <span className="th-label">Today — {today.day}</span>
+        <div className="th-wear">Wear <span style={{ color: today.hex, fontWeight: 700 }}>{today.names.join(', ')}</span></div>
+        <div className="th-planet">{today.symbol} Ruled by {today.planet}</div>
+        <p className="th-meaning">{today.meaning}</p>
+        <div className="th-avoid">❌ Avoid: {today.avoid}</div>
+      </div>
+      <div className="th-swatches">
+        {today.colors.map((c, i) => (
+          <div key={i} className="th-swatch-wrap">
+            <div className="th-swatch" style={{ background: c }} />
+            <span className="th-swatch-name">{today.names[i]}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function PredictionsPage() {
   const [form, setForm] = useState({ name: '', date: '', time: '12:00' });
   const [forecast, setForecast] = useState<FutureForecast | null>(null);
@@ -373,6 +406,51 @@ export default function PredictionsPage() {
               </div>
             </div>
 
+            {/* Lucky colors by day */}
+            <div className="glass-card colors-card">
+              <h3 className="section-title colors-title">🎨 What Colour to Wear Each Day</h3>
+              <p className="section-sub">Every day is ruled by a planet — wearing its colour aligns you with that energy</p>
+
+              {/* Today highlight */}
+              <TodayHighlight />
+
+              {/* All 7 days */}
+              <div className="week-swatches">
+                {DAY_COLORS.map((d) => (
+                  <div key={d.day} className="swatch-col">
+                    <div className="swatch-circle" style={{ background: `linear-gradient(135deg, ${d.colors[0]}, ${d.colors[1]})` }}>
+                      <span className="swatch-symbol">{d.symbol}</span>
+                    </div>
+                    <span className="swatch-day">{d.day.slice(0,3)}</span>
+                    <span className="swatch-color-name">{d.names[0]}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Detail rows */}
+              <div className="color-details">
+                {DAY_COLORS.map((d) => (
+                  <div key={d.day} className="color-detail-row" style={{ borderLeftColor: d.hex }}>
+                    <div className="cdr-header">
+                      <div className="cdr-dot" style={{ background: `linear-gradient(135deg, ${d.colors[0]}, ${d.colors[1]})` }}>
+                        <span className="cdr-sym">{d.symbol}</span>
+                      </div>
+                      <div>
+                        <span className="cdr-day" style={{ color: d.hex }}>{d.day}</span>
+                        <span className="cdr-planet"> · {d.planet} · </span>
+                        <span className="cdr-names">{d.names.join(', ')}</span>
+                      </div>
+                    </div>
+                    <p className="cdr-meaning">{d.meaning}</p>
+                    <div className="cdr-footer">
+                      <span className="cdr-avoid">❌ Avoid: {d.avoid}</span>
+                      <span className="cdr-tip">✦ {d.tip}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <p className="disclaimer">
               ✦ These predictions are based on planetary transits and are intended for
               reflection and inspiration. Your free will is always the most powerful force in your life.
@@ -485,6 +563,65 @@ export default function PredictionsPage() {
         .lucky-time { display: flex; align-items: center; gap: 0.4rem; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
         .clock-icon { font-size: 0.8rem; }
         .best-time { font-size: 0.78rem; font-weight: 600; color: #d4af37; }
+
+        /* Colors section */
+        .colors-card { padding: 1.75rem; }
+        .colors-title { color: #a78bfa !important; }
+
+        .today-highlight {
+          border: 1px solid;
+          border-radius: 14px;
+          padding: 1.5rem;
+          display: flex;
+          align-items: flex-start;
+          gap: 1.5rem;
+          margin: 1rem 0 1.5rem;
+          flex-wrap: wrap;
+        }
+        .th-left { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 0.4rem; }
+        .th-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+        .th-wear { font-family: 'Cinzel', serif; font-size: 1.15rem; font-weight: 700; color: #fff; }
+        .th-planet { font-size: 0.82rem; color: rgba(255,255,255,0.45); }
+        .th-meaning { color: rgba(255,255,255,0.68); font-size: 0.87rem; line-height: 1.78; margin: 0.25rem 0; }
+        .th-avoid { font-size: 0.8rem; color: rgba(255,120,120,0.75); font-style: italic; }
+        .th-swatches { display: flex; gap: 0.75rem; flex-shrink: 0; }
+        .th-swatch-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+        .th-swatch { width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.12); box-shadow: 0 4px 16px rgba(0,0,0,0.35); }
+        .th-swatch-name { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.45); }
+
+        .week-swatches {
+          display: flex;
+          justify-content: space-between;
+          gap: 0.4rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+        .swatch-col { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; flex: 1; min-width: 40px; }
+        .swatch-circle { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(0,0,0,0.3); }
+        .swatch-symbol { font-size: 1rem; filter: drop-shadow(0 0 3px rgba(0,0,0,0.6)); }
+        .swatch-day { font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.7); }
+        .swatch-color-name { font-size: 0.6rem; color: rgba(255,255,255,0.38); }
+
+        .color-details { display: flex; flex-direction: column; gap: 0.75rem; }
+        .color-detail-row {
+          border-left: 3px solid;
+          border-radius: 0 10px 10px 0;
+          padding: 0.9rem 1rem;
+          background: rgba(255,255,255,0.02);
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .cdr-header { display: flex; align-items: center; gap: 0.65rem; }
+        .cdr-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .cdr-sym { font-size: 0.9rem; }
+        .cdr-day { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; }
+        .cdr-planet { font-size: 0.78rem; color: rgba(255,255,255,0.4); }
+        .cdr-names { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.55); }
+        .cdr-meaning { color: rgba(255,255,255,0.65); font-size: 0.85rem; line-height: 1.75; margin: 0; }
+        .cdr-footer { display: flex; flex-direction: column; gap: 0.3rem; }
+        .cdr-avoid { font-size: 0.78rem; color: rgba(255,110,110,0.75); }
+        .cdr-tip { font-size: 0.78rem; color: rgba(212,175,55,0.85); }
 
         .disclaimer { text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; line-height: 1.6; padding: 0 1rem; }
       `}</style>
