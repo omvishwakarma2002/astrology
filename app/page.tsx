@@ -134,6 +134,72 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Danger preview */}
+      <section className="section-container teaser-section">
+        <div className="teaser-header">
+          <span className="features-eyebrow">Cosmic Warnings</span>
+          <h2 className="features-title">⚠️ What to Stay Away From</h2>
+          <p className="features-desc">The planets reveal hidden dangers and situations to avoid — personalised to your birth chart</p>
+        </div>
+        <div className="danger-preview-grid">
+          {[
+            { icon: '💸', title: 'Risky Financial Decisions', tag: '🔴 High Risk', desc: 'Planetary tension warns against impulsive spending, gambling, or investing in things you don\'t fully understand. Avoid signing financial agreements without careful review.' },
+            { icon: '🗣️', title: 'Arguments & Harsh Words', tag: '🔴 High Risk', desc: 'Mercury\'s position heightens the risk of miscommunication. Words spoken in anger now may cause lasting damage — think twice before sending that message.' },
+            { icon: '💔', title: 'Rushing into Romance', tag: '🟡 Caution', desc: 'The stars caution against moving too fast in love. What feels like intense connection may be illusion. Take your time before making serious commitments.' },
+            { icon: '⚡', title: 'Impulsive Major Decisions', tag: '🔴 High Risk', desc: 'Uranus is electrifying your chart — drastic decisions like quitting your job or ending a relationship may feel urgent. Wait at least two weeks before acting.' },
+            { icon: '🌀', title: 'Overthinking & Anxiety', tag: '🟡 Caution', desc: 'Mercury energy is amplifying worst-case thinking. Recognize when your mind is spinning stories rather than solving real problems. Breathe and return to the present.' },
+            { icon: '🍷', title: 'Escapism & Excess', tag: '🟡 Caution', desc: 'Neptune\'s influence may tempt you toward overindulgence. These provide momentary relief but deepen the underlying issues. Stay grounded.' },
+          ].map((d, i) => (
+            <div key={i} className="danger-preview-card">
+              <div className="dp-top">
+                <span className="dp-icon">{d.icon}</span>
+                <div>
+                  <span className="dp-tag">{d.tag}</span>
+                  <div className="dp-title">{d.title}</div>
+                </div>
+              </div>
+              <p className="dp-desc">{d.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="teaser-cta-row">
+          <Link href="/predictions" className="teaser-cta">Get My Personal Warnings →</Link>
+        </div>
+      </section>
+
+      {/* Lucky activities preview */}
+      <section className="section-container teaser-section">
+        <div className="teaser-header">
+          <span className="features-eyebrow">Cosmic Blessings</span>
+          <h2 className="features-title">✨ Good Luck Activities</h2>
+          <p className="features-desc">Planetary-aligned actions that amplify your fortune — personalised to your birth chart</p>
+        </div>
+        <div className="lucky-preview-grid">
+          {[
+            { icon: '🧘', activity: 'Morning Meditation', time: 'Sunrise, before checking your phone', desc: 'Jupiter aligns with your natal Moon, amplifying inner clarity. Even 10 minutes at sunrise will supercharge your intuition for the entire day.' },
+            { icon: '✍️', activity: 'Journaling Your Dreams', time: 'Within 5 minutes of waking', desc: 'Neptune is activated in your chart, making the dream world rich with guidance. Write immediately upon waking — the messages are literal gold.' },
+            { icon: '🌿', activity: 'Walking Barefoot in Nature', time: 'Golden hour — 1 hour before sunset', desc: 'Venus trines your Earth planets. Direct contact with grass or soil grounds your energy and dissolves accumulated stress at the cellular level.' },
+            { icon: '🎨', activity: 'Creative Expression', time: 'Afternoon, when creative flow peaks', desc: 'The Sun-Neptune aspect floods your chart with creative inspiration. Painting, writing, dancing or music will not only bring joy but may produce your finest work yet.' },
+            { icon: '💰', activity: 'Saving or Investing Wisely', time: 'Wednesday or Thursday', desc: 'Jupiter trines your natal Saturn, creating one of the most auspicious windows of the year for financial decisions made from patience and wisdom.' },
+            { icon: '🙏', activity: 'Gratitude Practice', time: 'Last thing before sleep', desc: 'Venus and Jupiter together create a powerful gratitude vortex. Writing 5 specific things you\'re grateful for each evening will magnetically attract more of the same.' },
+            { icon: '🌱', activity: 'Starting a New Project', time: 'Within 48 hours of your reading', desc: 'New Moon energy combined with Jupiter\'s expansion means any seed you plant right now has unusually fertile ground to grow from.' },
+            { icon: '🧹', activity: 'Decluttering Your Space', time: 'Weekend morning', desc: 'Saturn is pushing you to release what no longer serves. Clearing physical clutter creates energetic space for new blessings and opportunities to enter.' },
+          ].map((a, i) => (
+            <div key={i} className="lucky-preview-card">
+              <div className="lp-top">
+                <span className="lp-icon">{a.icon}</span>
+                <span className="lp-activity">{a.activity}</span>
+              </div>
+              <p className="lp-desc">{a.desc}</p>
+              <div className="lp-time">🕐 Best time: {a.time}</div>
+            </div>
+          ))}
+        </div>
+        <div className="teaser-cta-row">
+          <Link href="/predictions" className="teaser-cta lucky-cta">Get My Lucky Activities →</Link>
+        </div>
+      </section>
+
       {/* Zodiac strip */}
       <section className="zodiac-strip">
         <div className="zodiac-strip-inner">
@@ -369,6 +435,82 @@ export default function HomePage() {
           transition: opacity 0.2s;
         }
         .feature-card:hover .feature-cta { opacity: 0.8; }
+
+        /* Teaser sections */
+        .teaser-section { padding-top: 0; padding-bottom: 5rem; }
+        .teaser-header { text-align: center; margin-bottom: 2.5rem; }
+        .teaser-cta-row { text-align: center; margin-top: 2rem; }
+        .teaser-cta {
+          display: inline-block;
+          background: linear-gradient(135deg, rgba(248,113,113,0.15), rgba(248,113,113,0.05));
+          border: 1px solid rgba(248,113,113,0.35);
+          color: #f87171;
+          text-decoration: none;
+          padding: 0.75rem 2rem;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.9rem;
+          letter-spacing: 0.04em;
+          transition: all 0.2s;
+        }
+        .teaser-cta:hover { background: rgba(248,113,113,0.2); transform: translateY(-2px); }
+        .lucky-cta {
+          background: linear-gradient(135deg, rgba(52,211,153,0.15), rgba(52,211,153,0.05));
+          border-color: rgba(52,211,153,0.35);
+          color: #34d399;
+        }
+        .lucky-cta:hover { background: rgba(52,211,153,0.2); }
+
+        /* Danger preview */
+        .danger-preview-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        @media (min-width: 640px) { .danger-preview-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1024px) { .danger-preview-grid { grid-template-columns: 1fr 1fr 1fr; } }
+        .danger-preview-card {
+          background: rgba(248,113,113,0.05);
+          border: 1px solid rgba(248,113,113,0.18);
+          border-left: 4px solid #f87171;
+          border-radius: 12px;
+          padding: 1.1rem 1.15rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+          transition: background 0.2s;
+        }
+        .danger-preview-card:hover { background: rgba(248,113,113,0.09); }
+        .dp-top { display: flex; align-items: flex-start; gap: 0.75rem; }
+        .dp-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .dp-tag { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.45); display: block; margin-bottom: 0.15rem; }
+        .dp-title { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; color: #fff; }
+        .dp-desc { color: rgba(255,255,255,0.58); font-size: 0.83rem; line-height: 1.7; margin: 0; }
+
+        /* Lucky preview */
+        .lucky-preview-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        @media (min-width: 640px) { .lucky-preview-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1024px) { .lucky-preview-grid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+        .lucky-preview-card {
+          background: rgba(52,211,153,0.05);
+          border: 1px solid rgba(52,211,153,0.18);
+          border-radius: 12px;
+          padding: 1.1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
+          transition: background 0.2s;
+        }
+        .lucky-preview-card:hover { background: rgba(52,211,153,0.1); }
+        .lp-top { display: flex; align-items: center; gap: 0.6rem; }
+        .lp-icon { font-size: 1.4rem; }
+        .lp-activity { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 700; color: #34d399; }
+        .lp-desc { color: rgba(255,255,255,0.58); font-size: 0.82rem; line-height: 1.7; margin: 0; flex: 1; }
+        .lp-time { font-size: 0.75rem; font-weight: 600; color: #d4af37; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
 
         /* Zodiac strip */
         .zodiac-strip {
