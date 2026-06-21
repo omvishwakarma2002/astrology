@@ -21,6 +21,17 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: 'Celestial — Astrology & Birth Charts',
   description: 'Discover your cosmic blueprint. Birth charts, daily horoscopes, compatibility, and live planetary positions.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Celestial',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0a0a0f',
+    'msapplication-TileImage': '/icons/icon-144.png',
+  },
 };
 
 export default function RootLayout({
@@ -30,6 +41,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${cinzel.variable} ${lato.variable}`}>
+      <head>
+        <link rel="icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <meta name="theme-color" content="#d4af37" />
+        <script dangerouslySetInnerHTML={{__html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+          }
+        `}} />
+      </head>
       <body>
         <LanguageProvider>
           <Navbar />
