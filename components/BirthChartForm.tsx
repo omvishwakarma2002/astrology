@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Lang } from '@/lib/translations';
+import { t } from '@/lib/translations';
 
 export interface BirthChartFormData {
   name: string;
@@ -12,9 +14,10 @@ export interface BirthChartFormData {
 interface Props {
   onSubmit: (data: BirthChartFormData) => void;
   loading?: boolean;
+  lang?: Lang;
 }
 
-export default function BirthChartForm({ onSubmit, loading = false }: Props) {
+export default function BirthChartForm({ onSubmit, loading = false, lang = 'en' }: Props) {
   const [form, setForm] = useState<BirthChartFormData>({
     name: '',
     date: '',
@@ -37,32 +40,32 @@ export default function BirthChartForm({ onSubmit, loading = false }: Props) {
     <form onSubmit={handleSubmit} className="chart-form">
       <div className="form-grid">
         <div className="field-group">
-          <label className="field-label">Your Name</label>
+          <label className="field-label">{t('birthChart.form.name', lang)}</label>
           <input
             type="text"
             name="name"
             value={form.name}
             onChange={handleChange}
-            placeholder="Enter your name"
+            placeholder={t('birthChart.form.namePlaceholder', lang)}
             required
             className="field-input"
           />
         </div>
 
         <div className="field-group">
-          <label className="field-label">Birth City</label>
+          <label className="field-label">{t('birthChart.form.city', lang)}</label>
           <input
             type="text"
             name="city"
             value={form.city}
             onChange={handleChange}
-            placeholder="e.g. New York, London"
+            placeholder={t('birthChart.form.cityPlaceholder', lang)}
             className="field-input"
           />
         </div>
 
         <div className="field-group">
-          <label className="field-label">Birth Date</label>
+          <label className="field-label">{t('birthChart.form.date', lang)}</label>
           <input
             type="date"
             name="date"
@@ -74,7 +77,7 @@ export default function BirthChartForm({ onSubmit, loading = false }: Props) {
         </div>
 
         <div className="field-group">
-          <label className="field-label">Birth Time (optional)</label>
+          <label className="field-label">{t('birthChart.form.time', lang)}</label>
           <input
             type="time"
             name="time"
@@ -89,10 +92,10 @@ export default function BirthChartForm({ onSubmit, loading = false }: Props) {
         {loading ? (
           <span className="loading-text">
             <span className="spinner" />
-            Calculating...
+            {t('birthChart.form.loading', lang)}
           </span>
         ) : (
-          '✦ Reveal My Cosmic Blueprint'
+          t('birthChart.form.submit', lang)
         )}
       </button>
 

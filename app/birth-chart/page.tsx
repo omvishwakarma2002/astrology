@@ -6,6 +6,8 @@ import ChartWheel from '@/components/ChartWheel';
 import PlanetCard from '@/components/PlanetCard';
 import PersonalitySummary from '@/components/PersonalitySummary';
 import { calculatePlanetPositions, PlanetPosition } from '@/lib/astrology';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/translations';
 
 interface ChartResult {
   name: string;
@@ -18,6 +20,7 @@ interface ChartResult {
 export default function BirthChartPage() {
   const [loading, setLoading]   = useState(false);
   const [result, setResult]     = useState<ChartResult | null>(null);
+  const { lang } = useLanguage();
 
   const handleSubmit = (data: BirthChartFormData) => {
     setLoading(true);
@@ -39,17 +42,14 @@ export default function BirthChartPage() {
       <div className="section-container">
         {/* Header */}
         <div className="page-header">
-          <span className="page-eyebrow">Natal Astrology</span>
-          <h1 className="page-title">Birth Chart Calculator</h1>
-          <p className="page-desc">
-            Enter your birth details to reveal the exact positions of the planets at the moment
-            of your arrival, forming the cosmic signature that is uniquely yours.
-          </p>
+          <span className="page-eyebrow">{t('birthChart.eyebrow', lang)}</span>
+          <h1 className="page-title">{t('birthChart.title', lang)}</h1>
+          <p className="page-desc">{t('birthChart.desc', lang)}</p>
         </div>
 
         {/* Form card */}
         <div className="glass-card form-card">
-          <BirthChartForm onSubmit={handleSubmit} loading={loading} />
+          <BirthChartForm onSubmit={handleSubmit} loading={loading} lang={lang} />
         </div>
 
         {/* Results */}
@@ -60,13 +60,13 @@ export default function BirthChartPage() {
               <div className="sun-moon-row">
                 <div className="summary-pill">
                   <span className="pill-icon" style={{ color: '#f59e0b' }}>☉</span>
-                  <span className="pill-label">Sun in</span>
+                  <span className="pill-label">{t('birthChart.sunIn', lang)}</span>
                   <span className="pill-value">{sunPlanet.signSymbol} {sunPlanet.sign}</span>
                 </div>
                 <div className="summary-divider">✦</div>
                 <div className="summary-pill">
                   <span className="pill-icon" style={{ color: '#c4b5fd' }}>☽</span>
-                  <span className="pill-label">Moon in</span>
+                  <span className="pill-label">{t('birthChart.moonIn', lang)}</span>
                   <span className="pill-value">{moonPlanet.signSymbol} {moonPlanet.sign}</span>
                 </div>
               </div>
@@ -80,7 +80,7 @@ export default function BirthChartPage() {
 
               {/* Planet list */}
               <div className="planets-list">
-                <h2 className="section-heading">Planetary Positions</h2>
+                <h2 className="section-heading">{t('birthChart.planetaryPositions', lang)}</h2>
                 <div className="planet-cards-grid">
                   {result.planets.map(p => (
                     <PlanetCard key={p.name} planet={p} />
@@ -91,7 +91,7 @@ export default function BirthChartPage() {
 
             {/* Personality Summary */}
             <div className="glass-card summary-card">
-              <PersonalitySummary planets={result.planets} name={result.name} />
+              <PersonalitySummary planets={result.planets} name={result.name} lang={lang} />
             </div>
           </div>
         )}

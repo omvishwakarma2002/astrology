@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { generateForecast, FutureForecast, Prediction, Timeframe, ENERGY_LABELS, Energy, DangerWarning, LuckyActivity } from '@/lib/predictions';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t, Lang } from '@/lib/translations';
 
 const DAY_COLORS = [
   { day: 'Sunday',    planet: 'Sun',     symbol: '☉', colors: ['#FF8C00','#FFD700','#FFA500'], names: ['Orange','Gold','Amber'],       hex: '#FFD700', meaning: 'Attracts success, confidence, and vitality. Wear gold or orange to radiate solar energy and draw recognition, leadership opportunities, and joy into your day.', avoid: 'Dark blue or black — they suppress the Sun\'s expansive energy.', tip: 'Gold jewellery amplifies this day\'s power enormously.' },
@@ -52,7 +54,7 @@ function ScoreRing({ score, energy }: { score: number; energy: Energy }) {
   );
 }
 
-function PredictionCard({ pred, defaultOpen = false }: { pred: Prediction; defaultOpen?: boolean }) {
+function PredictionCard({ pred, defaultOpen = false, lang = 'en' }: { pred: Prediction; defaultOpen?: boolean; lang?: Lang }) {
   const [open, setOpen] = useState(defaultOpen);
   const color = ENERGY_COLORS[pred.energy];
   const bg = ENERGY_BG[pred.energy];
@@ -81,11 +83,11 @@ function PredictionCard({ pred, defaultOpen = false }: { pred: Prediction; defau
           <p className="pred-detail">{pred.detail}</p>
           <div className="pred-footer">
             <div className="advice-box">
-              <span className="advice-label">✦ Cosmic Advice</span>
+              <span className="advice-label">{t('pred.cosmicAdvice', lang)}</span>
               <span className="advice-text">{pred.advice}</span>
             </div>
             <div className="lucky-days">
-              <span className="advice-label">Lucky Days</span>
+              <span className="advice-label">{t('pred.luckyDays', lang)}</span>
               <div className="days-row">
                 {pred.luckyDays.map(d => (
                   <span key={d} className="day-chip" style={{ borderColor: color + '55', color }}>{d}</span>
@@ -209,16 +211,17 @@ function PredictionCard({ pred, defaultOpen = false }: { pred: Prediction; defau
   );
 }
 
-function TodayHighlight() {
+function TodayHighlight({ lang = 'en' }: { lang?: Lang }) {
   const today = useMemo(() => DAY_COLORS[new Date().getDay()], []);
+  const dayKey = `day.${today.day}` as const;
   return (
     <div className="today-highlight" style={{ borderColor: today.hex + '55', background: `linear-gradient(135deg, ${today.hex}14, ${today.colors[1]}08)` }}>
       <div className="th-left">
-        <span className="th-label">Today — {today.day}</span>
-        <div className="th-wear">Wear <span style={{ color: today.hex, fontWeight: 700 }}>{today.names.join(', ')}</span></div>
-        <div className="th-planet">{today.symbol} Ruled by {today.planet}</div>
+        <span className="th-label">{t('pred.todayIs', lang)} — {t(dayKey, lang)}</span>
+        <div className="th-wear">{t('pred.wear', lang)} <span style={{ color: today.hex, fontWeight: 700 }}>{today.names.join(', ')}</span></div>
+        <div className="th-planet">{today.symbol} {t('pred.ruledBy', lang)} {today.planet}</div>
         <p className="th-meaning">{today.meaning}</p>
-        <div className="th-avoid">❌ Avoid: {today.avoid}</div>
+        <div className="th-avoid">❌ {t('pred.avoid', lang)} {today.avoid}</div>
       </div>
       <div className="th-swatches">
         {today.colors.map((c, i) => (
@@ -233,6 +236,7 @@ function TodayHighlight() {
 }
 
 export default function PredictionsPage() {
+  const { lang } = useLanguage();
   const [form, setForm] = useState({ name: '', date: '', time: '12:00' });
   const [forecast, setForecast] = useState<FutureForecast | null>(null);
   const [loading, setLoading] = useState(false);
@@ -252,9 +256,9 @@ export default function PredictionsPage() {
 
   const currentPreds = forecast ? forecast[tab] : [];
   const tabLabels: { key: Timeframe; label: string }[] = [
-    { key: 'week', label: 'This Week' },
-    { key: 'month', label: 'This Month' },
-    { key: 'year', label: 'This Year' },
+    { key: 'week', label: t('pred.thisWeek', lang) },
+    { key: 'month', label: t('pred.thisMonth', lang) },
+    { key: 'year', label: t('pred.thisYear', lang) },
   ];
 
   return (
@@ -263,29 +267,26 @@ export default function PredictionsPage() {
 
         {/* Header */}
         <div className="page-header">
-          <span className="eyebrow">Cosmic Forecast</span>
-          <h1 className="page-title">Predict Your Future</h1>
-          <p className="page-desc">
-            Enter your birth details and the planets will reveal what lies ahead — in love,
-            career, money, health, and your spiritual path.
-          </p>
+          <span className="eyebrow">{t('pred.eyebrow', lang)}</span>
+          <h1 className="page-title">{t('pred.title', lang)}</h1>
+          <p className="page-desc">{t('pred.desc', lang)}</p>
         </div>
 
         {/* Form */}
         <form className="glass-card form-card" onSubmit={handleSubmit}>
           <div className="form-grid">
             <div className="field">
-              <label className="label">Your Name</label>
+              <label className="label">{t('pred.name', lang)}</label>
               <input
                 className="input"
                 type="text"
-                placeholder="Enter your name"
+                placeholder={t('birthChart.form.namePlaceholder', lang)}
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               />
             </div>
             <div className="field">
-              <label className="label">Date of Birth</label>
+              <label className="label">{t('pred.date', lang)}</label>
               <input
                 className="input"
                 type="date"
@@ -295,7 +296,7 @@ export default function PredictionsPage() {
               />
             </div>
             <div className="field">
-              <label className="label">Time of Birth</label>
+              <label className="label">{t('pred.time', lang)}</label>
               <input
                 className="input"
                 type="time"
@@ -305,7 +306,7 @@ export default function PredictionsPage() {
             </div>
           </div>
           <button className="submit-btn" type="submit" disabled={loading}>
-            {loading ? 'Reading the stars...' : '🔮 Reveal My Future'}
+            {loading ? t('pred.loading', lang) : t('pred.submit', lang)}
           </button>
         </form>
 
@@ -320,7 +321,7 @@ export default function PredictionsPage() {
             }}>
               <div className="banner-top">
                 <div>
-                  <div className="banner-label">Overall Cosmic Energy</div>
+                  <div className="banner-label">{t('pred.overallEnergy', lang)}</div>
                   <div className="banner-energy" style={{ color: ENERGY_COLORS[forecast.overallEnergy] }}>
                     {ENERGY_LABELS[forecast.overallEnergy]}
                   </div>
@@ -332,7 +333,7 @@ export default function PredictionsPage() {
 
             {/* Power dates */}
             <div className="glass-card power-card">
-              <h3 className="section-title">⚡ Upcoming Power Dates</h3>
+              <h3 className="section-title">{t('pred.powerDates', lang)}</h3>
               <div className="dates-list">
                 {forecast.powerDates.map((pd, i) => (
                   <div key={i} className="power-date">
@@ -359,14 +360,14 @@ export default function PredictionsPage() {
             {/* Predictions */}
             <div className="preds-list">
               {currentPreds.map((pred, i) => (
-                <PredictionCard key={pred.area} pred={pred} defaultOpen={i === 0} />
+                <PredictionCard key={pred.area} pred={pred} defaultOpen={i === 0} lang={lang} />
               ))}
             </div>
 
             {/* Danger warnings */}
             <div className="glass-card danger-card">
-              <h3 className="section-title danger-title">⚠️ What to Stay Away From</h3>
-              <p className="section-sub">The planets reveal energies and situations to avoid right now</p>
+              <h3 className="section-title danger-title">{t('pred.dangers', lang)}</h3>
+              <p className="section-sub">{t('pred.dangersDesc', lang)}</p>
               <div className="danger-list">
                 {forecast.dangers.map((d, i) => (
                   <div key={i} className={`danger-item severity-${d.severity}`}>
@@ -374,7 +375,7 @@ export default function PredictionsPage() {
                       <span className="danger-icon">{d.icon}</span>
                       <div className="danger-info">
                         <span className={`severity-badge badge-${d.severity}`}>
-                          {d.severity === 'high' ? '🔴 High Risk' : d.severity === 'medium' ? '🟡 Caution' : '🟢 Mild Warning'}
+                          {d.severity === 'high' ? t('pred.highRisk', lang) : d.severity === 'medium' ? t('pred.caution', lang) : t('pred.mildWarning', lang)}
                         </span>
                         <span className="danger-title-text">{d.title}</span>
                       </div>
@@ -387,8 +388,8 @@ export default function PredictionsPage() {
 
             {/* Lucky activities */}
             <div className="glass-card lucky-card">
-              <h3 className="section-title lucky-title">✨ Good Luck Activities</h3>
-              <p className="section-sub">Cosmic-aligned actions that will amplify your fortune right now</p>
+              <h3 className="section-title lucky-title">{t('pred.lucky', lang)}</h3>
+              <p className="section-sub">{t('pred.luckyDesc', lang)}</p>
               <div className="lucky-grid">
                 {forecast.luckyActivities.map((a, i) => (
                   <div key={i} className="lucky-item">
@@ -399,7 +400,7 @@ export default function PredictionsPage() {
                     <p className="lucky-reason">{a.reason}</p>
                     <div className="lucky-time">
                       <span className="clock-icon">🕐</span>
-                      <span className="best-time">Best time: {a.bestTime}</span>
+                      <span className="best-time">{t('pred.bestTime', lang)} {a.bestTime}</span>
                     </div>
                   </div>
                 ))}
@@ -408,11 +409,11 @@ export default function PredictionsPage() {
 
             {/* Lucky colors by day */}
             <div className="glass-card colors-card">
-              <h3 className="section-title colors-title">🎨 What Colour to Wear Each Day</h3>
-              <p className="section-sub">Every day is ruled by a planet — wearing its colour aligns you with that energy</p>
+              <h3 className="section-title colors-title">{t('pred.colors', lang)}</h3>
+              <p className="section-sub">{t('pred.colorsDesc', lang)}</p>
 
               {/* Today highlight */}
-              <TodayHighlight />
+              <TodayHighlight lang={lang} />
 
               {/* All 7 days */}
               <div className="week-swatches">
@@ -451,10 +452,7 @@ export default function PredictionsPage() {
               </div>
             </div>
 
-            <p className="disclaimer">
-              ✦ These predictions are based on planetary transits and are intended for
-              reflection and inspiration. Your free will is always the most powerful force in your life.
-            </p>
+            <p className="disclaimer">{t('pred.disclaimer', lang)}</p>
           </div>
         )}
       </div>

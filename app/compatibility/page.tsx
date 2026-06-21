@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import CompatibilityResultComponent from '@/components/CompatibilityResult';
 import { calculateCompatibility, ALL_SIGNS, CompatibilityResult } from '@/lib/compatibility';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/translations';
 
 const SIGN_SYMBOLS: Record<string, string> = {
   Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',
@@ -10,6 +12,7 @@ const SIGN_SYMBOLS: Record<string, string> = {
 };
 
 export default function CompatibilityPage() {
+  const { lang } = useLanguage();
   const [sign1, setSign1] = useState('');
   const [sign2, setSign2] = useState('');
   const [result, setResult] = useState<CompatibilityResult | null>(null);
@@ -31,19 +34,16 @@ export default function CompatibilityPage() {
       <div className="section-container">
         {/* Header */}
         <div className="page-header">
-          <span className="page-eyebrow">Cosmic Chemistry</span>
-          <h1 className="page-title">Compatibility Checker</h1>
-          <p className="page-desc">
-            Explore the elemental and modal dynamics between two zodiac signs.
-            Discover what the stars reveal about your cosmic connection.
-          </p>
+          <span className="page-eyebrow">{t('compat.eyebrow', lang)}</span>
+          <h1 className="page-title">{t('compat.title', lang)}</h1>
+          <p className="page-desc">{t('compat.desc', lang)}</p>
         </div>
 
         {/* Selector */}
         <div className="glass-card selector-card">
           <div className="selector-row">
             <div className="selector-group">
-              <label className="selector-label">First Sign</label>
+              <label className="selector-label">{t('compat.person1', lang)}</label>
               <div className="signs-grid">
                 {ALL_SIGNS.map(sign => (
                   <button
@@ -63,7 +63,7 @@ export default function CompatibilityPage() {
             </div>
 
             <div className="selector-group">
-              <label className="selector-label">Second Sign</label>
+              <label className="selector-label">{t('compat.person2', lang)}</label>
               <div className="signs-grid">
                 {ALL_SIGNS.map(sign => (
                   <button
@@ -92,7 +92,7 @@ export default function CompatibilityPage() {
               disabled={!sign1 || !sign2}
               className="check-btn"
             >
-              Reveal Compatibility
+              {t('compat.submit', lang)}
             </button>
             {result && (
               <button onClick={handleReset} className="reset-btn">

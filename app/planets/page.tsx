@@ -3,8 +3,11 @@
 import { useMemo } from 'react';
 import PlanetCard from '@/components/PlanetCard';
 import { calculatePlanetPositions, PlanetPosition } from '@/lib/astrology';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/translations';
 
 export default function PlanetsPage() {
+  const { lang } = useLanguage();
   const now = new Date();
   const planets: PlanetPosition[] = useMemo(() => {
     return calculatePlanetPositions(
@@ -36,16 +39,13 @@ export default function PlanetsPage() {
       <div className="section-container">
         {/* Header */}
         <div className="page-header">
-          <span className="page-eyebrow">Real-Time Celestial Map</span>
-          <h1 className="page-title">Live Planetary Positions</h1>
+          <span className="page-eyebrow">{t('planets.eyebrow', lang)}</span>
+          <h1 className="page-title">{t('planets.title', lang)}</h1>
           <div className="time-display">
             <span className="time-icon">◎</span>
             <span className="time-str">{dateStr} · {timeStr}</span>
           </div>
-          <p className="page-desc">
-            The current positions of all major planets through the zodiac,
-            calculated in real time from precise astronomical formulas.
-          </p>
+          <p className="page-desc">{t('planets.desc', lang)}</p>
         </div>
 
         {/* Element summary */}

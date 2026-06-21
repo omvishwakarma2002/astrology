@@ -3,26 +3,29 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-
-const navLinks = [
-  { href: '/',              label: 'Home',        icon: '✦' },
-  { href: '/birth-chart',  label: 'Birth Chart',  icon: '⊕' },
-  { href: '/horoscope',    label: 'Horoscope',    icon: '☽' },
-  { href: '/compatibility',label: 'Compatibility', icon: '♾' },
-  { href: '/planets',      label: 'Planets',       icon: '⟡' },
-  { href: '/predictions',  label: 'Future',        icon: '🔮' },
-];
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/translations';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { lang, toggleLanguage } = useLanguage();
+
+  const navLinks = [
+    { href: '/',               label: t('nav.home', lang),          icon: '✦' },
+    { href: '/birth-chart',    label: t('nav.birthChart', lang),    icon: '⊕' },
+    { href: '/horoscope',      label: t('nav.horoscope', lang),     icon: '☽' },
+    { href: '/compatibility',  label: t('nav.compatibility', lang), icon: '♾' },
+    { href: '/planets',        label: t('nav.planets', lang),       icon: '⟡' },
+    { href: '/predictions',    label: t('nav.future', lang),        icon: '🔮' },
+  ];
 
   return (
     <nav className="navbar">
       <div className="navbar-inner">
         <Link href="/" className="navbar-brand">
           <span className="brand-star">✦</span>
-          <span className="brand-text">Celestial</span>
+          <span className="brand-text">{t('nav.brand', lang)}</span>
         </Link>
 
         {/* Desktop links */}
@@ -39,16 +42,26 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="hamburger"
-          onClick={() => setMenuOpen(o => !o)}
-          aria-label="Toggle menu"
-        >
-          <span className={`hamburger-line ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`hamburger-line ${menuOpen ? 'opacity-0' : ''}`} />
-          <span className={`hamburger-line ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-        </button>
+        {/* Language toggle + hamburger */}
+        <div className="nav-right">
+          <button
+            className="lang-toggle"
+            onClick={toggleLanguage}
+            aria-label="Toggle language"
+          >
+            {lang === 'en' ? 'हिं' : 'EN'}
+          </button>
+
+          <button
+            className="hamburger"
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label="Toggle menu"
+          >
+            <span className={`hamburger-line ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`hamburger-line ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`hamburger-line ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -115,7 +128,48 @@ export default function Navbar() {
         }
         @media (min-width: 768px) {
           .nav-links-desktop { display: flex; }
+        }
+        .nav-right {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .lang-toggle {
+          border: 1px solid rgba(212, 175, 55, 0.6);
+          border-radius: 20px;
+          background: rgba(212, 175, 55, 0.08);
+          color: #d4af37;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          padding: 0.3rem 0.65rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-family: inherit;
+        }
+        .lang-toggle:hover {
+          background: rgba(212, 175, 55, 0.18);
+          border-color: #d4af37;
+        }
+        .hamburger {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 4px;
+        }
+        @media (min-width: 768px) {
           .hamburger { display: none; }
+        }
+        .hamburger-line {
+          display: block;
+          width: 22px;
+          height: 2px;
+          background: #d4af37;
+          border-radius: 2px;
+          transition: all 0.3s;
         }
         .nav-link {
           display: flex;
@@ -140,23 +194,6 @@ export default function Navbar() {
         }
         .nav-icon {
           font-size: 0.9rem;
-        }
-        .hamburger {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 4px;
-        }
-        .hamburger-line {
-          display: block;
-          width: 22px;
-          height: 2px;
-          background: #d4af37;
-          border-radius: 2px;
-          transition: all 0.3s;
         }
         .mobile-menu {
           display: flex;

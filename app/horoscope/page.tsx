@@ -3,9 +3,12 @@
 import { useState } from 'react';
 import HoroscopeCard from '@/components/HoroscopeCard';
 import { horoscopes, ALL_SIGNS } from '@/lib/horoscopes';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/translations';
 
 export default function HoroscopePage() {
   const [selectedSign, setSelectedSign] = useState<string | null>(null);
+  const { lang } = useLanguage();
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -18,13 +21,10 @@ export default function HoroscopePage() {
       <div className="section-container">
         {/* Header */}
         <div className="page-header">
-          <span className="page-eyebrow">Daily Guidance</span>
-          <h1 className="page-title">Your Daily Horoscope</h1>
+          <span className="page-eyebrow">{t('horoscope.eyebrow', lang)}</span>
+          <h1 className="page-title">{t('horoscope.title', lang)}</h1>
           <p className="page-date">{today}</p>
-          <p className="page-desc">
-            Select your zodiac sign to receive a detailed cosmic reading covering love,
-            career, and wellbeing for today.
-          </p>
+          <p className="page-desc">{t('horoscope.desc', lang)}</p>
         </div>
 
         {/* Sign selector */}

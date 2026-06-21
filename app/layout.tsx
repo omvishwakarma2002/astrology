@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Cinzel, Lato } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import { LanguageProvider } from '@/lib/LanguageContext';
 
 const cinzel = Cinzel({
   variable: '--font-cinzel',
@@ -30,8 +31,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cinzel.variable} ${lato.variable}`}>
       <body>
-        <Navbar />
-        {children}
+        <LanguageProvider>
+          <Navbar />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

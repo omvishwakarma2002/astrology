@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { PlanetPosition } from '@/lib/astrology';
 import { getPlanetInterpretation, getOverallSummary } from '@/lib/interpretations';
+import { Lang, t } from '@/lib/translations';
 
 interface Props {
   planets: PlanetPosition[];
   name: string;
+  lang?: Lang;
 }
 
 const PLANET_ORDER = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
@@ -35,7 +37,7 @@ const PLANET_COLORS: Record<string, string> = {
   Neptune: '#818cf8',
 };
 
-export default function PersonalitySummary({ planets, name }: Props) {
+export default function PersonalitySummary({ planets, name, lang = 'en' }: Props) {
   const [expanded, setExpanded] = useState<string | null>('Sun');
 
   const orderedPlanets = PLANET_ORDER
@@ -57,8 +59,8 @@ export default function PersonalitySummary({ planets, name }: Props) {
       </div>
 
       {/* Section title */}
-      <h3 className="planets-heading">What Each Planet Says About You</h3>
-      <p className="planets-sub">Tap any planet to reveal its influence on your personality</p>
+      <h3 className="planets-heading">{t('birthChart.whatPlanets', lang)}</h3>
+      <p className="planets-sub">{t('birthChart.tapToReveal', lang)}</p>
 
       {/* Planet accordion */}
       <div className="planets-accordion">

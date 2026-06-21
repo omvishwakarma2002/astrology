@@ -2,64 +2,8 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
-
-const features = [
-  {
-    href: '/birth-chart',
-    icon: '⊕',
-    title: 'Birth Chart',
-    subtitle: 'Your Cosmic Blueprint',
-    description:
-      'Enter your birth date, time, and place to generate a personalised natal chart. Discover the exact positions of the Sun, Moon, and planets at the moment you arrived in the world.',
-    color: '#d4af37',
-    bg: 'rgba(212,175,55,0.08)',
-    border: 'rgba(212,175,55,0.25)',
-  },
-  {
-    href: '/horoscope',
-    icon: '☽',
-    title: 'Daily Horoscope',
-    subtitle: 'Celestial Guidance',
-    description:
-      'Receive detailed daily readings for all twelve zodiac signs covering love, career, and wellbeing — channelling the ancient wisdom of the stars into practical, inspiring guidance.',
-    color: '#818cf8',
-    bg: 'rgba(129,140,248,0.08)',
-    border: 'rgba(129,140,248,0.25)',
-  },
-  {
-    href: '/compatibility',
-    icon: '♾',
-    title: 'Compatibility',
-    subtitle: 'Cosmic Chemistry',
-    description:
-      'Explore the elemental and modal dynamics between any two zodiac signs. Uncover your strengths, challenges, and the deeper cosmic forces that shape your most important relationships.',
-    color: '#f472b6',
-    bg: 'rgba(244,114,182,0.08)',
-    border: 'rgba(244,114,182,0.25)',
-  },
-  {
-    href: '/planets',
-    icon: '⟡',
-    title: 'Live Planets',
-    subtitle: 'The Celestial Stage',
-    description:
-      'Track the current positions of all major planets in real time. Understand how today\'s planetary alignments are shaping collective energy and your personal experience.',
-    color: '#34d399',
-    bg: 'rgba(52,211,153,0.08)',
-    border: 'rgba(52,211,153,0.25)',
-  },
-  {
-    href: '/predictions',
-    icon: '🔮',
-    title: 'Predict Future',
-    subtitle: 'Cosmic Forecast',
-    description:
-      'Discover what the planets have in store for you. Get personalised predictions for love, career, money, health, and spiritual growth — this week, this month, and this year.',
-    color: '#a855f7',
-    bg: 'rgba(168,85,247,0.08)',
-    border: 'rgba(168,85,247,0.25)',
-  },
-];
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/translations';
 
 const signs = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
 
@@ -137,18 +81,20 @@ const DAY_COLORS = [
 ];
 
 function TodayColorCard() {
+  const { lang } = useLanguage();
   const today = useMemo(() => DAY_COLORS[new Date().getDay()], []);
+  const dayKey = `day.${today.day}` as const;
   return (
     <div className="today-color-banner" style={{ borderColor: today.hex + '66', background: `linear-gradient(135deg, ${today.hex}18, ${today.colors[1]}10)` }}>
       <div className="today-left">
-        <div className="today-label">Today is {today.day}</div>
-        <h3 className="today-title" style={{ color: today.hex }}>Wear {today.colorNames.join(', ')}</h3>
+        <div className="today-label">{t('pred.todayIs', lang)} {t(dayKey, lang)}</div>
+        <h3 className="today-title" style={{ color: today.hex }}>{t('pred.wear', lang)} {today.colorNames.join(', ')}</h3>
         <div className="today-planet">
           <span className="today-planet-symbol">{today.symbol}</span>
-          Ruled by {today.planet}
+          {t('pred.ruledBy', lang)} {today.planet}
         </div>
         <p className="today-meaning">{today.meaning}</p>
-        <div className="today-avoid">❌ Avoid: {today.avoid}</div>
+        <div className="today-avoid">❌ {t('pred.avoid', lang)} {today.avoid}</div>
       </div>
       <div className="today-swatches">
         {today.colors.map((c, i) => (
@@ -163,6 +109,61 @@ function TodayColorCard() {
 }
 
 export default function HomePage() {
+  const { lang } = useLanguage();
+
+  const features = [
+    {
+      href: '/birth-chart',
+      icon: '⊕',
+      title: t('feature.birthChart.title', lang),
+      subtitle: t('feature.birthChart.subtitle', lang),
+      description: t('feature.birthChart.desc', lang),
+      color: '#d4af37',
+      bg: 'rgba(212,175,55,0.08)',
+      border: 'rgba(212,175,55,0.25)',
+    },
+    {
+      href: '/horoscope',
+      icon: '☽',
+      title: t('feature.horoscope.title', lang),
+      subtitle: t('feature.horoscope.subtitle', lang),
+      description: t('feature.horoscope.desc', lang),
+      color: '#818cf8',
+      bg: 'rgba(129,140,248,0.08)',
+      border: 'rgba(129,140,248,0.25)',
+    },
+    {
+      href: '/compatibility',
+      icon: '♾',
+      title: t('feature.compatibility.title', lang),
+      subtitle: t('feature.compatibility.subtitle', lang),
+      description: t('feature.compatibility.desc', lang),
+      color: '#f472b6',
+      bg: 'rgba(244,114,182,0.08)',
+      border: 'rgba(244,114,182,0.25)',
+    },
+    {
+      href: '/planets',
+      icon: '⟡',
+      title: t('feature.planets.title', lang),
+      subtitle: t('feature.planets.subtitle', lang),
+      description: t('feature.planets.desc', lang),
+      color: '#34d399',
+      bg: 'rgba(52,211,153,0.08)',
+      border: 'rgba(52,211,153,0.25)',
+    },
+    {
+      href: '/predictions',
+      icon: '🔮',
+      title: t('feature.predictions.title', lang),
+      subtitle: t('feature.predictions.subtitle', lang),
+      description: t('feature.predictions.desc', lang),
+      color: '#a855f7',
+      bg: 'rgba(168,85,247,0.08)',
+      border: 'rgba(168,85,247,0.25)',
+    },
+  ];
+
   return (
     <div className="page-wrapper">
       {/* Hero */}
@@ -182,24 +183,21 @@ export default function HomePage() {
           <div className="hero-star">✦</div>
 
           <h1 className="hero-title">
-            Discover Your<br />
-            <span className="hero-title-accent">Cosmic Blueprint</span>
+            {t('home.hero.title1', lang)}<br />
+            <span className="hero-title-accent">{t('home.hero.title2', lang)}</span>
           </h1>
 
-          <p className="hero-subtitle">
-            Ancient wisdom. Modern clarity. Explore the celestial forces that shape your destiny
-            through personalised birth charts, daily horoscopes, and live planetary positions.
-          </p>
+          <p className="hero-subtitle">{t('home.hero.subtitle', lang)}</p>
 
           <div className="hero-cta">
             <Link href="/birth-chart" className="cta-primary">
-              ✦ Reveal My Chart
+              {t('home.hero.cta1', lang)}
             </Link>
             <Link href="/horoscope" className="cta-secondary">
-              Today&apos;s Horoscope
+              {t('home.hero.cta2', lang)}
             </Link>
             <Link href="/predictions" className="cta-secondary">
-              🔮 Predict Future
+              {t('home.hero.cta3', lang)}
             </Link>
           </div>
         </div>
@@ -208,11 +206,9 @@ export default function HomePage() {
       {/* Features */}
       <section className="section-container">
         <div className="features-header">
-          <span className="features-eyebrow">Navigate the Stars</span>
-          <h2 className="features-title">Your Celestial Toolkit</h2>
-          <p className="features-desc">
-            Five powerful gateways to deeper self-understanding and cosmic awareness
-          </p>
+          <span className="features-eyebrow">{t('home.features.eyebrow', lang)}</span>
+          <h2 className="features-title">{t('home.features.title', lang)}</h2>
+          <p className="features-desc">{t('home.features.desc', lang)}</p>
         </div>
 
         <div className="features-grid">
@@ -227,7 +223,7 @@ export default function HomePage() {
                 <p className="feature-desc">{f.description}</p>
               </div>
               <span className="feature-cta" style={{ color: f.color }}>
-                Explore {f.title} →
+                {t('feature.explore', lang)} {f.title} →
               </span>
             </Link>
           ))}
@@ -237,9 +233,9 @@ export default function HomePage() {
       {/* Danger preview */}
       <section className="section-container teaser-section">
         <div className="teaser-header">
-          <span className="features-eyebrow">Cosmic Warnings</span>
-          <h2 className="features-title">⚠️ What to Stay Away From</h2>
-          <p className="features-desc">The planets reveal hidden dangers and situations to avoid — personalised to your birth chart</p>
+          <span className="features-eyebrow">{t('home.danger.eyebrow', lang)}</span>
+          <h2 className="features-title">{t('home.danger.title', lang)}</h2>
+          <p className="features-desc">{t('home.danger.desc', lang)}</p>
         </div>
         <div className="danger-preview-grid">
           {[
@@ -263,16 +259,16 @@ export default function HomePage() {
           ))}
         </div>
         <div className="teaser-cta-row">
-          <Link href="/predictions" className="teaser-cta">Get My Personal Warnings →</Link>
+          <Link href="/predictions" className="teaser-cta">{t('home.danger.cta', lang)}</Link>
         </div>
       </section>
 
       {/* Lucky activities preview */}
       <section className="section-container teaser-section">
         <div className="teaser-header">
-          <span className="features-eyebrow">Cosmic Blessings</span>
-          <h2 className="features-title">✨ Good Luck Activities</h2>
-          <p className="features-desc">Planetary-aligned actions that amplify your fortune — personalised to your birth chart</p>
+          <span className="features-eyebrow">{t('home.lucky.eyebrow', lang)}</span>
+          <h2 className="features-title">{t('home.lucky.title', lang)}</h2>
+          <p className="features-desc">{t('home.lucky.desc', lang)}</p>
         </div>
         <div className="lucky-preview-grid">
           {[
@@ -291,21 +287,21 @@ export default function HomePage() {
                 <span className="lp-activity">{a.activity}</span>
               </div>
               <p className="lp-desc">{a.desc}</p>
-              <div className="lp-time">🕐 Best time: {a.time}</div>
+              <div className="lp-time">🕐 {t('pred.bestTime', lang)} {a.time}</div>
             </div>
           ))}
         </div>
         <div className="teaser-cta-row">
-          <Link href="/predictions" className="teaser-cta lucky-cta">Get My Lucky Activities →</Link>
+          <Link href="/predictions" className="teaser-cta lucky-cta">{t('home.lucky.cta', lang)}</Link>
         </div>
       </section>
 
       {/* Lucky colors by day */}
       <section className="section-container teaser-section">
         <div className="teaser-header">
-          <span className="features-eyebrow">Planetary Colours</span>
-          <h2 className="features-title">🎨 What Colour to Wear Each Day</h2>
-          <p className="features-desc">Every day of the week is ruled by a planet — wearing its colour aligns you with that planet&apos;s energy and invites its blessings</p>
+          <span className="features-eyebrow">{t('home.colors.eyebrow', lang)}</span>
+          <h2 className="features-title">{t('home.colors.title', lang)}</h2>
+          <p className="features-desc">{t('home.colors.desc', lang)}</p>
         </div>
 
         {/* Today's highlight */}
@@ -319,7 +315,7 @@ export default function HomePage() {
                 <span className="color-planet-symbol">{d.symbol}</span>
               </div>
               <div className="color-day-info">
-                <div className="color-day-name">{d.day}</div>
+                <div className="color-day-name">{t(`day.${d.day}` as `day.${string}`, lang)}</div>
                 <div className="color-planet-name">{d.planet}</div>
                 <div className="color-names-row">
                   {d.colorNames.map(c => (
@@ -340,14 +336,14 @@ export default function HomePage() {
                   <span className="cd-symbol">{d.symbol}</span>
                 </div>
                 <div>
-                  <div className="cd-day" style={{ color: d.hex }}>{d.day}</div>
-                  <div className="cd-planet">Ruled by {d.planet}</div>
+                  <div className="cd-day" style={{ color: d.hex }}>{t(`day.${d.day}` as `day.${string}`, lang)}</div>
+                  <div className="cd-planet">{t('pred.ruledBy', lang)} {d.planet}</div>
                   <div className="cd-colornames">{d.colorNames.join(' · ')}</div>
                 </div>
               </div>
               <p className="cd-meaning">{d.meaning}</p>
               <div className="cd-avoid">
-                <span className="cd-avoid-label">❌ Avoid:</span> {d.avoid}
+                <span className="cd-avoid-label">❌ {t('pred.avoid', lang)}</span> {d.avoid}
               </div>
               <div className="cd-lucky">
                 <span className="cd-lucky-label">✦ Pro tip:</span> {d.lucky}
@@ -368,11 +364,8 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="site-footer">
-        <p className="footer-brand">✦ Celestial</p>
-        <p className="footer-text">
-          Planetary positions calculated using astronomical algorithms.
-          For entertainment and self-reflection purposes.
-        </p>
+        <p className="footer-brand">✦ {t('nav.brand', lang)}</p>
+        <p className="footer-text">{t('home.footer.text', lang)}</p>
       </footer>
 
       <style jsx>{`
