@@ -1,0 +1,408 @@
+'use client';
+
+import { useState } from 'react';
+import { generateForecast, FutureForecast, Prediction, Timeframe, ENERGY_LABELS, Energy } from '@/lib/predictions';
+
+const ENERGY_COLORS: Record<Energy, string> = {
+  excellent:   '#22c55e',
+  good:        '#84cc16',
+  neutral:     '#94a3b8',
+  challenging: '#f59e0b',
+  intense:     '#a855f7',
+};
+
+const ENERGY_BG: Record<Energy, string> = {
+  excellent:   'rgba(34,197,94,0.1)',
+  good:        'rgba(132,204,22,0.1)',
+  neutral:     'rgba(148,163,184,0.08)',
+  challenging: 'rgba(245,158,11,0.1)',
+  intense:     'rgba(168,85,247,0.1)',
+};
+
+function ScoreRing({ score, energy }: { score: number; energy: Energy }) {
+  const r = 36;
+  const circ = 2 * Math.PI * r;
+  const fill = circ * (score / 10);
+  const color = ENERGY_COLORS[energy];
+
+  return (
+    <svg width="90" height="90" viewBox="0 0 90 90">
+      <circle cx="45" cy="45" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="6" />
+      <circle
+        cx="45" cy="45" r={r} fill="none"
+        stroke={color} strokeWidth="6"
+        strokeDasharray={`${fill} ${circ}`}
+        strokeLinecap="round"
+        transform="rotate(-90 45 45)"
+        style={{ transition: 'stroke-dasharray 1s ease' }}
+      />
+      <text x="45" y="49" textAnchor="middle" fill="#fff" fontSize="15" fontWeight="700">{score}</text>
+      <text x="45" y="60" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="7">/10</text>
+    </svg>
+  );
+}
+
+function PredictionCard({ pred, defaultOpen = false }: { pred: Prediction; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const color = ENERGY_COLORS[pred.energy];
+  const bg = ENERGY_BG[pred.energy];
+
+  return (
+    <div className="pred-card" style={{ borderColor: color + '33', background: bg }}>
+      <button className="pred-header" onClick={() => setOpen(o => !o)}>
+        <div className="pred-left">
+          <span className="pred-icon">{pred.icon}</span>
+          <div>
+            <div className="pred-area">{pred.area}</div>
+            <div className="pred-headline">{pred.headline}</div>
+          </div>
+        </div>
+        <div className="pred-right">
+          <span className="energy-badge" style={{ color, borderColor: color + '55' }}>
+            {ENERGY_LABELS[pred.energy]}
+          </span>
+          <ScoreRing score={pred.score} energy={pred.energy} />
+          <span className="chevron" style={{ transform: open ? 'rotate(180deg)' : 'none' }}>▾</span>
+        </div>
+      </button>
+
+      {open && (
+        <div className="pred-body">
+          <p className="pred-detail">{pred.detail}</p>
+          <div className="pred-footer">
+            <div className="advice-box">
+              <span className="advice-label">✦ Cosmic Advice</span>
+              <span className="advice-text">{pred.advice}</span>
+            </div>
+            <div className="lucky-days">
+              <span className="advice-label">Lucky Days</span>
+              <div className="days-row">
+                {pred.luckyDays.map(d => (
+                  <span key={d} className="day-chip" style={{ borderColor: color + '55', color }}>{d}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .pred-card {
+          border: 1px solid;
+          border-radius: 14px;
+          overflow: hidden;
+          transition: border-color 0.2s;
+        }
+        .pred-header {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 1.25rem;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .pred-left {
+          display: flex;
+          align-items: center;
+          gap: 0.9rem;
+          text-align: left;
+        }
+        .pred-icon { font-size: 1.8rem; flex-shrink: 0; }
+        .pred-area {
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.4);
+          margin-bottom: 0.2rem;
+        }
+        .pred-headline {
+          font-family: 'Cinzel', serif;
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: #fff;
+          line-height: 1.3;
+        }
+        .pred-right {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex-shrink: 0;
+        }
+        .energy-badge {
+          font-size: 0.72rem;
+          font-weight: 700;
+          border: 1px solid;
+          border-radius: 20px;
+          padding: 0.2rem 0.65rem;
+          white-space: nowrap;
+        }
+        .chevron {
+          color: rgba(255,255,255,0.4);
+          font-size: 1rem;
+          transition: transform 0.25s ease;
+        }
+        .pred-body {
+          padding: 0 1.25rem 1.25rem;
+          animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .pred-detail {
+          color: rgba(255,255,255,0.72);
+          font-size: 0.93rem;
+          line-height: 1.85;
+          margin: 0 0 1.25rem;
+        }
+        .pred-footer {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .advice-box {
+          background: rgba(255,255,255,0.04);
+          border-radius: 10px;
+          padding: 0.85rem 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+        .advice-label {
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #d4af37;
+        }
+        .advice-text {
+          font-size: 0.9rem;
+          color: rgba(255,255,255,0.8);
+          font-style: italic;
+        }
+        .lucky-days { display: flex; flex-direction: column; gap: 0.4rem; }
+        .days-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .day-chip {
+          font-size: 0.75rem;
+          font-weight: 600;
+          border: 1px solid;
+          border-radius: 20px;
+          padding: 0.2rem 0.65rem;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default function PredictionsPage() {
+  const [form, setForm] = useState({ name: '', date: '', time: '12:00' });
+  const [forecast, setForecast] = useState<FutureForecast | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState<Timeframe>('week');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.date) return;
+    setLoading(true);
+    setTimeout(() => {
+      const [y, m, d] = form.date.split('-').map(Number);
+      const [h, min] = form.time.split(':').map(Number);
+      setForecast(generateForecast(y, m, d, h + min / 60));
+      setLoading(false);
+    }, 900);
+  };
+
+  const currentPreds = forecast ? forecast[tab] : [];
+  const tabLabels: { key: Timeframe; label: string }[] = [
+    { key: 'week', label: 'This Week' },
+    { key: 'month', label: 'This Month' },
+    { key: 'year', label: 'This Year' },
+  ];
+
+  return (
+    <div className="page-wrapper">
+      <div className="section-container">
+
+        {/* Header */}
+        <div className="page-header">
+          <span className="eyebrow">Cosmic Forecast</span>
+          <h1 className="page-title">Predict Your Future</h1>
+          <p className="page-desc">
+            Enter your birth details and the planets will reveal what lies ahead — in love,
+            career, money, health, and your spiritual path.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form className="glass-card form-card" onSubmit={handleSubmit}>
+          <div className="form-grid">
+            <div className="field">
+              <label className="label">Your Name</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="Enter your name"
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="field">
+              <label className="label">Date of Birth</label>
+              <input
+                className="input"
+                type="date"
+                required
+                value={form.date}
+                onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+              />
+            </div>
+            <div className="field">
+              <label className="label">Time of Birth</label>
+              <input
+                className="input"
+                type="time"
+                value={form.time}
+                onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
+              />
+            </div>
+          </div>
+          <button className="submit-btn" type="submit" disabled={loading}>
+            {loading ? 'Reading the stars...' : '🔮 Reveal My Future'}
+          </button>
+        </form>
+
+        {/* Results */}
+        {forecast && (
+          <div className="results">
+
+            {/* Overall energy banner */}
+            <div className="overall-banner" style={{
+              borderColor: ENERGY_COLORS[forecast.overallEnergy] + '44',
+              background: ENERGY_BG[forecast.overallEnergy],
+            }}>
+              <div className="banner-top">
+                <div>
+                  <div className="banner-label">Overall Cosmic Energy</div>
+                  <div className="banner-energy" style={{ color: ENERGY_COLORS[forecast.overallEnergy] }}>
+                    {ENERGY_LABELS[forecast.overallEnergy]}
+                  </div>
+                </div>
+                <ScoreRing score={forecast.overallScore} energy={forecast.overallEnergy} />
+              </div>
+              <p className="cosmic-message">{forecast.cosmicMessage}</p>
+            </div>
+
+            {/* Power dates */}
+            <div className="glass-card power-card">
+              <h3 className="section-title">⚡ Upcoming Power Dates</h3>
+              <div className="dates-list">
+                {forecast.powerDates.map((pd, i) => (
+                  <div key={i} className="power-date">
+                    <span className="pd-date">{pd.date}</span>
+                    <span className="pd-event">{pd.event}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="tabs-row">
+              {tabLabels.map(({ key, label }) => (
+                <button
+                  key={key}
+                  className={`tab-btn ${tab === key ? 'active' : ''}`}
+                  onClick={() => setTab(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Predictions */}
+            <div className="preds-list">
+              {currentPreds.map((pred, i) => (
+                <PredictionCard key={pred.area} pred={pred} defaultOpen={i === 0} />
+              ))}
+            </div>
+
+            <p className="disclaimer">
+              ✦ These predictions are based on planetary transits and are intended for
+              reflection and inspiration. Your free will is always the most powerful force in your life.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .eyebrow {
+          font-size: 0.7rem; font-weight: 700;
+          letter-spacing: 0.2em; text-transform: uppercase; color: #d4af37;
+        }
+        .page-title {
+          font-family: 'Cinzel', serif;
+          font-size: clamp(1.75rem, 4vw, 2.5rem);
+          font-weight: 700; color: #fff;
+          margin: 0.5rem 0 0.75rem; letter-spacing: 0.04em;
+        }
+        .page-desc {
+          color: rgba(255,255,255,0.55); font-size: 1rem;
+          max-width: 540px; margin: 0 auto; line-height: 1.7;
+        }
+        .form-card { padding: 2rem; max-width: 680px; margin: 0 auto 2.5rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+        @media (min-width: 640px) { .form-grid { grid-template-columns: 1fr 1fr 1fr; } }
+        .field { display: flex; flex-direction: column; gap: 0.4rem; }
+        .label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+        .input {
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 10px; padding: 0.7rem 1rem;
+          color: #fff; font-size: 0.95rem; outline: none;
+          transition: border-color 0.2s;
+        }
+        .input:focus { border-color: rgba(212,175,55,0.5); }
+        .submit-btn {
+          width: 100%; padding: 0.9rem;
+          background: linear-gradient(135deg, #d4af37, #b8962e);
+          border: none; border-radius: 12px;
+          color: #1a1a2e; font-weight: 700; font-size: 1rem;
+          cursor: pointer; transition: opacity 0.2s;
+          font-family: 'Cinzel', serif; letter-spacing: 0.05em;
+        }
+        .submit-btn:hover { opacity: 0.9; }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .results { display: flex; flex-direction: column; gap: 1.75rem; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .overall-banner {
+          border: 1px solid; border-radius: 16px; padding: 1.75rem;
+        }
+        .banner-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .banner-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem; }
+        .banner-energy { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; }
+        .cosmic-message { color: rgba(255,255,255,0.75); font-size: 0.95rem; line-height: 1.85; margin: 0; font-style: italic; }
+        .power-card { padding: 1.5rem; }
+        .section-title { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; color: #d4af37; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 1rem; }
+        .dates-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .power-date { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .power-date:last-child { border-bottom: none; }
+        .pd-date { font-size: 0.8rem; font-weight: 700; color: #d4af37; white-space: nowrap; min-width: 60px; }
+        .pd-event { font-size: 0.88rem; color: rgba(255,255,255,0.65); line-height: 1.4; }
+        .tabs-row { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; }
+        .tab-btn {
+          flex: 1; padding: 0.6rem 1rem; border: none; border-radius: 10px;
+          font-size: 0.88rem; font-weight: 600; cursor: pointer;
+          background: transparent; color: rgba(255,255,255,0.5);
+          transition: all 0.2s; font-family: inherit;
+        }
+        .tab-btn.active { background: rgba(212,175,55,0.15); color: #d4af37; }
+        .preds-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .disclaimer { text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; line-height: 1.6; padding: 0 1rem; }
+      `}</style>
+    </div>
+  );
+}

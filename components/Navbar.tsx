@@ -10,6 +10,7 @@ const navLinks = [
   { href: '/horoscope',    label: 'Horoscope',    icon: '☽' },
   { href: '/compatibility',label: 'Compatibility', icon: '♾' },
   { href: '/planets',      label: 'Planets',       icon: '⟡' },
+  { href: '/predictions',  label: 'Future',        icon: '🔮' },
 ];
 
 export default function Navbar() {
