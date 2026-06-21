@@ -336,33 +336,70 @@ const ALL_LUCKY_ACTIVITIES: LuckyActivity[] = [
   { icon: '🍳', activity: 'Cooking a Nourishing Meal', reason: 'Taurus and Cancer energy bless domestic activities with healing power right now. Preparing fresh, wholesome food from scratch is both an act of self-love and a form of magic — infuse it with positive intention as you cook.', bestTime: 'Dinner time, with music playing' },
 ];
 
-function selectDangers(sunSign: string, harmony: number, seed: number): DangerWarning[] {
-  // More challenging harmony = more/higher severity warnings
+const ALL_DANGERS_HI: DangerWarning[] = [
+  { icon: '💸', title: 'जोखिम भरे वित्तीय निर्णय', description: 'ग्रहों का तनाव आवेगपूर्ण खर्च, जुए या ऐसी चीज़ों में निवेश के खिलाफ चेतावनी देता है जिन्हें आप पूरी तरह नहीं समझते। बिना सावधानीपूर्वक समीक्षा किए दोस्तों को बड़ी रकम उधार देने या वित्तीय समझौतों पर हस्ताक्षर करने से बचें।', severity: 'high' },
+  { icon: '🗣️', title: 'तर्क-वितर्क और कटु शब्द', description: 'बुध की वर्तमान स्थिति गलतफहमी और गर्म बहसों के जोखिम को बढ़ाती है। क्रोध में बोले गए शब्द अब स्थायी नुकसान कर सकते हैं। वह संदेश भेजने या वह टकराव करने से पहले दो बार सोचें।', severity: 'high' },
+  { icon: '💔', title: 'प्रेम में जल्दबाज़ी', description: 'सितारे अभी प्रेम में बहुत तेज़ी से आगे बढ़ने के खिलाफ सावधान करते हैं। जो गहरा जुड़ाव लग रहा है वह भ्रम हो सकता है। नए रोमांटिक साझेदारों के साथ गंभीर प्रतिबद्धताएं बनाने से पहले समय लें।', severity: 'medium' },
+  { icon: '🏃', title: 'शारीरिक अति परिश्रम', description: 'मंगल ऊर्जा अनिश्चित है — अभी शरीर को बहुत कठिन धकेलने से चोट का खतरा है। अत्यधिक खेल, लापरवाह ड्राइविंग, या थकान के संकेत मिलने पर आराम न छोड़ने से बचें।', severity: 'medium' },
+  { icon: '🍷', title: 'पलायनवाद और अति भोग', description: 'नेप्च्यून का प्रभाव आपको अति भोग की ओर प्रेरित कर सकता है। ये क्षणिक राहत देते हैं लेकिन मूल समस्याओं को गहरा करते हैं। ज़मीन से जुड़े रहें।', severity: 'medium' },
+  { icon: '🤐', title: 'ज़हरीले रहस्य छुपाना', description: 'कुछ छिपा हुआ दबाव बना रहा है। किसी रहस्य या अनकही सच्चाई को अकेले ढोने से तनाव और चिंता बढ़ेगी। किसी विश्वसनीय व्यक्ति से बात करें या डायरी में ईमानदारी से लिखें।', severity: 'medium' },
+  { icon: '🌙', title: 'नींद की अनदेखी', description: 'चंद्रमा की वर्तमान स्थिति नींद में खलल की संभावना बढ़ाती है। आराम को नज़रअंदाज़ करने से जीवन की हर अन्य चुनौती और बढ़ जाएगी। रात 10 बजे के बाद स्क्रीन बंद करें।', severity: 'low' },
+  { icon: '👥', title: 'ज़हरीले सामाजिक दायरे', description: 'शनि उन लोगों को उजागर कर रहा है जो आपकी ऊर्जा को भरते नहीं बल्कि खाली करते हैं। जो लगातार नाटक करते हैं, हेरफेर करते हैं, या हर बातचीत के बाद आपको बुरा महसूस कराते हैं — उनसे सतर्क रहें।', severity: 'medium' },
+  { icon: '📱', title: 'सोशल मीडिया तुलना', description: 'तनावग्रस्त शुक्र आपकी असली ज़िंदगी की दूसरों की हाइलाइट रील से तुलना करने के खिलाफ चेतावनी देता है। इस समय सोशल मीडिया स्क्रॉल करने से अपर्याप्तता और ईर्ष्या की भावना बढ़ेगी।', severity: 'low' },
+  { icon: '⚡', title: 'आवेगशील बड़े निर्णय', description: 'यूरेनस आपकी कुंडली को विद्युतीकृत कर रहा है — नौकरी छोड़ना, रिश्ता तोड़ना या अचानक जीवन बदलना आकर्षक लग सकता है। बदलाव ज़रूरी हो सकता है, लेकिन किसी भी भारी आवेग पर कम से कम दो सप्ताह रुककर सोचें।', severity: 'high' },
+  { icon: '🤝', title: 'बिना जाँचे व्यावसायिक साझेदारी', description: 'बृहस्पति का वर्ग बिना उचित जाँच-परख के व्यावसायिक सौदों में जल्दबाज़ी के खिलाफ चेतावनी देता है। कोई जितना वास्तव में है उससे अधिक भरोसेमंद दिख सकता है। सब कुछ लिखित में सत्यापित करें।', severity: 'high' },
+  { icon: '😤', title: 'क्रोध को दबाना', description: 'अभी निराशा और नाराज़गी को दबाने से बाद में अनियंत्रित विस्फोट होगा। व्यायाम, डायरी लेखन, या ईमानदार बातचीत जैसे स्वस्थ तरीके खोजें।', severity: 'low' },
+  { icon: '🏥', title: 'स्वास्थ्य लक्षणों को नज़रअंदाज़ करना', description: '6वां घर ग्रहों के तनाव में है। लगातार शारीरिक लक्षणों को नज़रअंदाज़ न करें। जो अभी छोटा लगता है वह बाद में बढ़ सकता है। आपका शरीर बोल रहा है — सुनें।', severity: 'high' },
+  { icon: '🛒', title: 'भावनात्मक खरीदारी', description: 'इस समय भावनात्मक खर्च एक वास्तविक जोखिम है। जब मूड ठीक करने के लिए कुछ अनावश्यक खरीदने का मन हो, तो 24 घंटे रुकें। जो खालीपन खरीदारी से भरता है उसपर गहरा ध्यान चाहिए।', severity: 'low' },
+  { icon: '🌀', title: 'अत्यधिक सोच और चिंता', description: 'बुध वक्री ऊर्जा मानसिक बकबक को बढ़ा रही है। पहचानें कि आपका मन कब समस्याएं हल करने की जगह कहानियाँ बना रहा है। सांस लें, ज़मीन से जुड़ें और वर्तमान पर लौटें।', severity: 'medium' },
+];
+
+const ALL_LUCKY_ACTIVITIES_HI: LuckyActivity[] = [
+  { icon: '🧘', activity: 'सुबह का ध्यान', reason: 'बृहस्पति आपके जन्म चंद्रमा के साथ संरेखित है, आंतरिक स्पष्टता और आध्यात्मिक ग्रहणशीलता को बढ़ाता है। सूर्योदय पर सिर्फ 10 मिनट का ध्यान पूरे दिन के लिए आपकी अंतर्ज्ञान शक्ति को सुपरचार्ज करेगा।', bestTime: 'सूर्योदय, फोन देखने से पहले' },
+  { icon: '✍️', activity: 'सपनों की डायरी', reason: 'नेप्च्यून आपकी कुंडली में सक्रिय है, जो स्वप्न जगत को मार्गदर्शन से असाधारण रूप से समृद्ध बनाता है। बिस्तर के पास डायरी रखें और जागते ही तुरंत लिखें।', bestTime: 'जागने के 5 मिनट के भीतर' },
+  { icon: '🌿', activity: 'प्रकृति में नंगे पैर चलना', reason: 'शुक्र आपके पृथ्वी ग्रहों के साथ त्रिकोण बनाता है। घास या मिट्टी से सीधा संपर्क आपकी ऊर्जा को स्थिर करता है और संचित तनाव को कोशिकीय स्तर पर घोल देता है।', bestTime: 'सूर्यास्त से 1 घंटे पहले' },
+  { icon: '🎨', activity: 'रचनात्मक अभिव्यक्ति', reason: 'सूर्य-नेप्च्यून योग आपकी कुंडली को रचनात्मक प्रेरणा से भर देता है। चित्रकारी, लेखन, नृत्य या संगीत न केवल आनंद लाएगा बल्कि आपकी अब तक की श्रेष्ठ कृति हो सकती है।', bestTime: 'दोपहर में, जब रचनात्मक प्रवाह चरम पर हो' },
+  { icon: '💌', activity: 'प्रिय व्यक्ति से संपर्क', reason: 'शुक्र आपके संचार क्षेत्र को आशीर्वाद दे रहा है। किसी प्रिय को हृदय से भेजा संदेश, कॉल या मुलाकात रिश्ते को गहरा करेगी।', bestTime: 'शाम को, जब दिल सबसे खुले होते हैं' },
+  { icon: '📚', activity: 'कुछ नया सीखें', reason: 'बुध अभी ज्ञान अवशोषण के लिए अच्छे पहलू में है। कोई कोर्स शुरू करना, चुनौतीपूर्ण किताब पढ़ना असामान्य रूप से संतोषजनक लगेगा।', bestTime: 'सुबह, जब मन सबसे तेज़ होता है' },
+  { icon: '🛁', activity: 'नमक स्नान अनुष्ठान', reason: 'चंद्रमा आपके ऊर्जावान क्षेत्र को शुद्ध कर रहा है। इरादे के साथ स्नान — सभी तनाव और नकारात्मकता को बहते हुए कल्पना करना — अभी शक्तिशाली शुद्धिकारक ऊर्जा वहन करता है।', bestTime: 'शाम को, सोने से पहले' },
+  { icon: '💰', activity: 'समझदारी से बचत या निवेश', reason: 'बृहस्पति आपके जन्म शनि के साथ त्रिकोण बनाता है, जो धैर्य और ज्ञान से किए गए वित्तीय निर्णयों के लिए वर्ष की सबसे शुभ खिड़की बनाता है।', bestTime: 'बुधवार या गुरुवार' },
+  { icon: '🤸', activity: 'हल्का योग या स्ट्रेचिंग', reason: 'मंगल अभी सचेत शारीरिक अभ्यास का समर्थन कर रहा है। योग, ताई ची, या सिर्फ 10 मिनट की स्ट्रेच दिनचर्या आपकी ऊर्जा को नाटकीय रूप से बढ़ाएगी।', bestTime: 'सुबह जल्दी या दोपहर के खाने से पहले' },
+  { icon: '🌱', activity: 'नया प्रोजेक्ट शुरू करें', reason: 'अमावस्या ऊर्जा और बृहस्पति के विस्तार का मतलब है कि अभी बोया गया कोई भी बीज — एक व्यावसायिक विचार, रचनात्मक परियोजना, स्वास्थ्य आदत — असामान्य रूप से उपजाऊ जमीन पाता है।', bestTime: 'आपकी रीडिंग के 48 घंटों के भीतर' },
+  { icon: '🙏', activity: 'कृतज्ञता अभ्यास', reason: 'शुक्र और बृहस्पति मिलकर आपकी कुंडली में एक शक्तिशाली कृतज्ञता भंवर बनाते हैं। हर शाम 5 विशिष्ट चीज़ें लिखना जिनके लिए आप आभारी हैं, चुंबकीय रूप से और अधिक आकर्षित करेगा।', bestTime: 'सोने से पहले अंतिम काम' },
+  { icon: '🧹', activity: 'अपना स्थान साफ करें', reason: 'शनि आपको जो अब उपयोगी नहीं है उसे छोड़ने के लिए प्रेरित कर रहा है। घर या कार्यस्थान से भौतिक अव्यवस्था हटाने से नई आशीष, अवसरों और स्पष्टता के लिए शाब्दिक और ऊर्जावान जगह बनती है।', bestTime: 'सप्ताहांत की सुबह' },
+  { icon: '🤝', activity: 'नेटवर्किंग और सामाजिक जुड़ाव', reason: 'मजबूत स्थिति में सूर्य आपको असामान्य रूप से आकर्षक और यादगार बनाता है। कार्यक्रमों में जाएं, पुराने संपर्कों से जुड़ें — सही लोग आपकी कक्षा में आ रहे हैं।', bestTime: 'शाम के सामाजिक कार्यक्रम' },
+  { icon: '🌊', activity: 'तैराकी या पानी के पास समय', reason: 'नेप्च्यून और आपका जन्म चंद्रमा पानी के उपचारकारी गुणों के साथ गहरी अनुनाद बनाते हैं। समुद्र, झील, नदी के पास का समय आपकी भावनात्मक बैटरी रिचार्ज करेगा।', bestTime: 'जब भी भावनात्मक रूप से थका हुआ महसूस करें' },
+  { icon: '🎯', activity: 'स्पष्ट इरादे निर्धारित करें', reason: 'मंगल आपकी कुंडली में एकदम केंद्रित है, जो स्पष्ट रूप से बताए गए लक्ष्यों और इरादों को असामान्य शक्ति देता है। अपने शीर्ष 3 लक्ष्य ऐसे लिखें जैसे वे पहले से हासिल हो गए हों।', bestTime: 'अमावस्या, या सप्ताह का पहला दिन' },
+  { icon: '🍳', activity: 'पौष्टिक भोजन बनाएं', reason: 'वृष और कर्क ऊर्जा अभी घरेलू गतिविधियों को उपचारकारी शक्ति से आशीर्वादित करती है। ताज़ा, स्वस्थ भोजन खरोंच से तैयार करना आत्म-प्रेम का कार्य और एक प्रकार की जादुई ऊर्जा है।', bestTime: 'रात का खाना, संगीत के साथ' },
+];
+
+function selectDangers(sunSign: string, harmony: number, seed: number, lang: 'en' | 'hi' = 'en'): DangerWarning[] {
+  const pool = lang === 'hi' ? ALL_DANGERS_HI : ALL_DANGERS;
   const count = harmony < -1 ? 4 : harmony < 0 ? 3 : 2;
   const selected: DangerWarning[] = [];
   const used = new Set<number>();
   let s = seed * 7 + sunSign.length * 13;
   while (selected.length < count) {
     s = (s * 1103515245 + 12345) & 0x7fffffff;
-    const idx = s % ALL_DANGERS.length;
-    if (!used.has(idx)) { used.add(idx); selected.push(ALL_DANGERS[idx]); }
+    const idx = s % pool.length;
+    if (!used.has(idx)) { used.add(idx); selected.push(pool[idx]); }
   }
-  // Sort: high severity first
   return selected.sort((a, b) => {
     const order = { high: 0, medium: 1, low: 2 };
     return order[a.severity] - order[b.severity];
   });
 }
 
-function selectLuckyActivities(sunSign: string, harmony: number, seed: number): LuckyActivity[] {
+function selectLuckyActivities(sunSign: string, harmony: number, seed: number, lang: 'en' | 'hi' = 'en'): LuckyActivity[] {
+  const pool = lang === 'hi' ? ALL_LUCKY_ACTIVITIES_HI : ALL_LUCKY_ACTIVITIES;
   const count = 4;
   const selected: LuckyActivity[] = [];
   const used = new Set<number>();
   let s = seed * 11 + sunSign.length * 17 + 999;
   while (selected.length < count) {
     s = (s * 1103515245 + 12345) & 0x7fffffff;
-    const idx = s % ALL_LUCKY_ACTIVITIES.length;
-    if (!used.has(idx)) { used.add(idx); selected.push(ALL_LUCKY_ACTIVITIES[idx]); }
+    const idx = s % pool.length;
+    if (!used.has(idx)) { used.add(idx); selected.push(pool[idx]); }
   }
   return selected;
 }
@@ -371,7 +408,8 @@ function selectLuckyActivities(sunSign: string, harmony: number, seed: number): 
 
 export function generateForecast(
   birthYear: number, birthMonth: number, birthDay: number,
-  birthHour: number = 12
+  birthHour: number = 12,
+  lang: 'en' | 'hi' = 'en'
 ): FutureForecast {
   const now = new Date();
   const natal = calculatePlanetPositions(birthYear, birthMonth, birthDay, birthHour);
@@ -437,7 +475,13 @@ export function generateForecast(
   const avgScore = weekPredictions.reduce((s, p) => s + p.score, 0) / weekPredictions.length;
   const overallEnergy = scoreToEnergy(avgScore);
 
-  const cosmicMessages: Record<Energy, string> = {
+  const cosmicMessages: Record<Energy, string> = lang === 'hi' ? {
+    excellent: `ब्रह्मांड अभी आपके पक्ष में खुद को व्यवस्थित कर रहा है, ${natalSun.sign}। ग्रह आपका नाम फुसफुसा रहे हैं। आत्मविश्वास के साथ आगे बढ़ें — यह आपका समय है चमकने का, साहसपूर्वक प्रेम करने का, और वह हासिल करने का जिसके आप हमेशा से हकदार थे।`,
+    good: `सितारे धीरे से आपका साथ दे रहे हैं, ${natalSun.sign}। आप वास्तविक सकारात्मक गति के दौर में हैं। अपने आसपास प्रगति के शांत संकेतों पर भरोसा करें, अपने इरादों के साथ निरंतर रहें, और अच्छी चीज़ों को सही समय पर आने दें।`,
+    neutral: `ब्रह्मांड आपके विकास के लिए जगह बना रहा है, ${natalSun.sign}। यह तैयारी और आंतरिक खेती का मौसम है। जो आप शांत समय में संजोते हैं वह प्रकाश के मौसमों में शानदार तरीके से खिलता है। प्रक्रिया पर भरोसा करें।`,
+    challenging: `ग्रह आपके सामने वह घर्षण प्रस्तुत कर रहे हैं जो हीरे बनाता है, ${natalSun.sign}। ये चुनौतियाँ दंड नहीं हैं — ये दीक्षाएं हैं। आप जो ताकत अभी विकसित करते हैं वह आपकी आने वाले वर्षों तक सेवा करेगी। आप जितना जानते हैं उससे कहीं अधिक सक्षम हैं।`,
+    intense: `आप परिवर्तन की भट्टी में हैं, ${natalSun.sign}। ब्रह्मांड हमें गहरे उद्देश्य के बिना तीव्र बदलाव से शायद ही गुज़ारता है। जो कुछ भी दूर जा रहा है वह किसी ऐसी चीज़ के लिए जगह बना रहा है जो अधिक प्रामाणिक रूप से, शक्तिशाली रूप से आप हैं। आग पर भरोसा करें।`,
+  } : {
     excellent: `The cosmos is arranging itself in your favour right now, ${natalSun.sign}. The planets are whispering your name. Step forward with confidence — this is your time to shine, to love boldly, and to reach for what you have always deserved.`,
     good: `The stars are gently supporting you, ${natalSun.sign}. You are in a period of genuine positive momentum. Trust the quiet signs of progress around you, stay consistent with your intentions, and allow good things to arrive in their perfect timing.`,
     neutral: `The universe is holding space for your growth, ${natalSun.sign}. This is a season of preparation and inner cultivation. What you tend to in the quiet times blooms magnificently in the seasons of light. Trust the process.`,
@@ -465,8 +509,8 @@ export function generateForecast(
     overallScore: Math.round(avgScore * 10) / 10,
     cosmicMessage: cosmicMessages[overallEnergy],
     powerDates,
-    dangers: selectDangers(natalSun.sign, harmony, seed),
-    luckyActivities: selectLuckyActivities(natalSun.sign, harmony, seed),
+    dangers: selectDangers(natalSun.sign, harmony, seed, lang),
+    luckyActivities: selectLuckyActivities(natalSun.sign, harmony, seed, lang),
   };
 }
 

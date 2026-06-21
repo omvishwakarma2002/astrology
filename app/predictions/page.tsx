@@ -249,7 +249,7 @@ export default function PredictionsPage() {
     setTimeout(() => {
       const [y, m, d] = form.date.split('-').map(Number);
       const [h, min] = form.time.split(':').map(Number);
-      setForecast(generateForecast(y, m, d, h + min / 60));
+      setForecast(generateForecast(y, m, d, h + min / 60, lang));
       setLoading(false);
     }, 900);
   };

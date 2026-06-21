@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import HoroscopeCard from '@/components/HoroscopeCard';
-import { horoscopes, ALL_SIGNS } from '@/lib/horoscopes';
+import { horoscopes, getHoroscope, ALL_SIGNS } from '@/lib/horoscopes';
 import { useLanguage } from '@/lib/LanguageContext';
 import { t } from '@/lib/translations';
 
@@ -14,7 +14,7 @@ export default function HoroscopePage() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  const selectedData = selectedSign ? horoscopes[selectedSign] : null;
+  const selectedData = selectedSign ? getHoroscope(selectedSign, lang) : null;
 
   return (
     <div className="page-wrapper">
@@ -54,18 +54,21 @@ export default function HoroscopePage() {
         {/* All signs grid (when none selected) */}
         {!selectedSign && (
           <div className="all-signs-grid">
-            {ALL_SIGNS.map(sign => (
-              <button
-                key={sign}
-                onClick={() => setSelectedSign(sign)}
-                className="mini-sign-card"
-              >
-                <span className="mini-symbol">{horoscopes[sign].symbol}</span>
-                <span className="mini-name">{sign}</span>
-                <span className="mini-dates">{horoscopes[sign].dateRange}</span>
-                <span className="mini-mood">{horoscopes[sign].mood}</span>
-              </button>
-            ))}
+            {ALL_SIGNS.map(sign => {
+              const d = getHoroscope(sign, lang)!;
+              return (
+                <button
+                  key={sign}
+                  onClick={() => setSelectedSign(sign)}
+                  className="mini-sign-card"
+                >
+                  <span className="mini-symbol">{d.symbol}</span>
+                  <span className="mini-name">{sign}</span>
+                  <span className="mini-dates">{d.dateRange}</span>
+                  <span className="mini-mood">{d.mood}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

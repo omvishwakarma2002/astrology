@@ -65,7 +65,7 @@ export default function PersonalitySummary({ planets, name, lang = 'en' }: Props
       {/* Planet accordion */}
       <div className="planets-accordion">
         {orderedPlanets.map(planet => {
-          const interp = getPlanetInterpretation(planet.name, planet.sign);
+          const interp = getPlanetInterpretation(planet.name, planet.sign, lang);
           if (!interp) return null;
           const isOpen = expanded === planet.name;
           const color = PLANET_COLORS[planet.name] || '#d4af37';
